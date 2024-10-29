@@ -10,7 +10,7 @@
 </script>
 
 <div>
-	<button on:click={handleClick}> click me {num} </button>
+	<button on:click={handleClick}> click {num} </button>
 	{#each arr as a}
 		{#if a === 2}
 			<Navbar />
