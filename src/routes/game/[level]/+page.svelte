@@ -1,0 +1,105 @@
+<script>
+	import HTML from '$lib/Game/HTML.svelte';
+	import CSS from '$lib/Game/CSS.svelte';
+	import JS from '$lib/Game/JS.svelte';
+	import Description from '../../../lib/Game/Description.svelte';
+	let { data } = $props();
+	const level = data.level;
+	data = data.res;
+	let tasks = data.tasks;
+	const updatePreview = (type, updatedSource) => {
+		if (type === 'js') {
+			jsCode = updatedSource;
+		} else if (type === 'html') {
+			htmlCode = updatedSource;
+		} else if (type === 'css') {
+			cssCode = updatedSource;
+		}
+	};
+
+	let htmlCode = $state(``);
+
+	let cssCode = $state(``);
+
+	let jsCode = $state(``);
+
+	let generatedCode = $state('');
+	let finalCode = $state('');
+	let checkVal = $state(false);
+
+	$effect(() => {
+		htmlCode = data.html;
+		cssCode = data.css;
+		jsCode = data.js;
+	});
+	$effect(() => {
+		generatedCode = `<!DOCTYPE html>
+		<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>Sample HTML</title>
+				<style> 
+					html{background:#fff; height:100%}
+					${cssCode}
+				</style>
+			</head>
+			<body>
+				${htmlCode}
+				<script>${jsCode}<\/script>
+			</body>
+		</html>`;
+		if (!checkVal) {
+			finalCode = generatedCode;
+		}
+	});
+
+	const saveManually = () => {
+		finalCode = generatedCode;
+	};
+</script>
+
+<div class="flex flex-col gap-2">
+	<div class="text-2xl font-semibold text-white">
+		Level: {level}
+	</div>
+	<div>
+		<Description {tasks} />
+	</div>
+	<div class="flex flex-row gap-6 text-sm">
+		<HTML sourceCode={htmlCode} updatePreview={(type, code) => updatePreview(type, code)} />
+		<CSS sourceCode={cssCode} updatePreview={(type, code) => updatePreview(type, code)} />
+		<JS sourceCode={jsCode} updatePreview={(type, code) => updatePreview(type, code)} />
+	</div>
+	<div class="mt-5 flex flex-col gap-4">
+		<div class="flex flex-row items-center justify-between">
+			<h2 class="text-white">Live Preview:</h2>
+			{#if checkVal}
+				<button
+					class="rounded-lg bg-blue-600 px-8 py-[6px] text-white shadow-2xl duration-200 ease-in-out hover:bg-blue-500"
+					onclick={saveManually}
+				>
+					Save
+				</button>
+			{/if}
+			<div class="flex flex-row items-center justify-center gap-4 text-slate-500">
+				<label class="relative inline-flex cursor-pointer items-center">
+					<input type="checkbox" class="peer sr-only" bind:checked={checkVal} />
+					<div
+						class="peer h-8 w-14 rounded-full bg-gray-300 duration-300 peer-checked:bg-blue-600"
+					></div>
+					<div
+						class="absolute left-1 top-1 h-6 w-6 rounded-full bg-white shadow transition-transform duration-300 peer-checked:translate-x-6"
+					></div>
+				</label>
+				<div>Save on click</div>
+			</div>
+		</div>
+		<!-- svelte-ignore a11y_missing_attribute -->
+		<iframe
+			id="preview"
+			class="min-h-[50vh] w-full rounded-lg border-[1px] border-[#ddd]"
+			srcdoc={finalCode}
+		></iframe>
+	</div>
+</div>
