@@ -1,4 +1,4 @@
-import { fail, json, redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import User from '$lib/models/User.js';
 import bcrypt from 'bcryptjs';
 
@@ -12,16 +12,13 @@ export const actions = {
 		try {
 			const userData = (await User.query('username').eq(username).exec()).toJSON()[0];
 			if (!userData) {
-				console.log("User doesn't exists!!!");
 				return fail(407, { message: "User doesn't exists!!!", success: false });
 			} else {
 				const check = bcrypt.compareSync(password, userData.password);
 				if (check) {
-					console.log('Signned in successfully.');
 					cookies.set('username', username, { path: '/' });
 					return { message: 'LoggedIn successfully!!!', success: true };
 				} else {
-					console.log('Username or/and password is/and incorrect!!!');
 					return fail(403, {
 						message: 'Username or/and password is/and incorrect!!!',
 						success: false
@@ -68,6 +65,6 @@ export const actions = {
 export async function load({ cookies }) {
 	const username = cookies.get('username');
 	if (username && username !== '') {
-		redirect(307, '/');
+		redirect(307, '/game');
 	}
 }
