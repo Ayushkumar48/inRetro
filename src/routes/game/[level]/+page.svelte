@@ -3,10 +3,11 @@
 	import CSS from '$lib/Game/CSS.svelte';
 	import JS from '$lib/Game/JS.svelte';
 	import Description from '../../../lib/Game/Description.svelte';
+	import { toast } from 'svelte-sonner';
 	let { data } = $props();
+	const username = data.username;
 	const level = data.level;
-	data = data.res;
-	let tasks = data.tasks;
+	let tasks = level.tasks;
 	const updatePreview = (type, updatedSource) => {
 		if (type === 'js') {
 			jsCode = updatedSource;
@@ -28,9 +29,9 @@
 	let checkVal = $state(false);
 
 	$effect(() => {
-		htmlCode = data.html;
-		cssCode = data.css;
-		jsCode = data.js;
+		htmlCode = level.html;
+		cssCode = level.css;
+		jsCode = level.js;
 	});
 	$effect(() => {
 		generatedCode = `<!DOCTYPE html>
@@ -57,14 +58,72 @@
 	const saveManually = () => {
 		finalCode = generatedCode;
 	};
+	async function saveCode() {
+		const data = {
+			levelId: level.levelId,
+			html: htmlCode,
+			css: cssCode,
+			js: jsCode,
+			path: level.path,
+			language: level.language,
+			topic: level.topic,
+			color: level.color,
+			tasks
+		};
+
+		try {
+			const response = await fetch(`/game/${level.levelId}?username=${username}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			});
+			console.log(response);
+
+			if (!response.ok) {
+				toast.error('Internal Error');
+				return;
+			}
+			const result = await response.json();
+			console.log(result);
+			if (result.status === 201) {
+				toast.success(result.message);
+			} else {
+				toast.error('Error while saving data!');
+			}
+		} catch (error) {
+			console.error('Error saving code:', error);
+			toast.error('An unexpected error occurred.');
+		}
+	}
 </script>
 
 <div class="flex flex-col gap-2">
-	<div class="text-2xl font-semibold text-white">
-		Level: {level}
+	<div class="flex flex-row justify-between">
+		<div>
+			<div class="text-2xl font-semibold text-white">
+				Path: {level.path}
+			</div>
+			<div class="text-2xl font-semibold text-white">
+				Level: {level.levelId}
+			</div>
+			<div class="text-2xl font-semibold text-white">
+				{level.language} -
+				{level.topic}
+			</div>
+		</div>
+		<div class="flex items-center justify-center">
+			<button
+				class="rounded-md bg-green-600 px-3 py-2 text-white duration-200 ease-in-out hover:bg-green-500 hover:shadow-md hover:shadow-green-400"
+				onclick={saveCode}
+			>
+				Save Code
+			</button>
+		</div>
 	</div>
 	<div>
-		<Description {tasks} />
+		<Description {tasks} color={level.color} />
 	</div>
 	<div class="flex flex-row gap-6 text-sm">
 		<HTML sourceCode={htmlCode} updatePreview={(type, code) => updatePreview(type, code)} />
@@ -79,7 +138,7 @@
 					class="rounded-lg bg-blue-600 px-8 py-[6px] text-white shadow-2xl duration-200 ease-in-out hover:bg-blue-500"
 					onclick={saveManually}
 				>
-					Save
+					Change
 				</button>
 			{/if}
 			<div class="flex flex-row items-center justify-center gap-4 text-slate-500">
@@ -92,7 +151,7 @@
 						class="absolute left-1 top-1 h-6 w-6 rounded-full bg-white shadow transition-transform duration-300 peer-checked:translate-x-6"
 					></div>
 				</label>
-				<div>Save on click</div>
+				<div>Change on click</div>
 			</div>
 		</div>
 		<!-- svelte-ignore a11y_missing_attribute -->

@@ -1,5 +1,21 @@
 import dynamoose from 'dynamoose';
 
+const levelSchema = new dynamoose.Schema({
+	levelId: Number,
+	path: String,
+	language: String,
+	topic: String,
+	status: String,
+	color: String,
+	html: String,
+	css: String,
+	js: String,
+	tasks: {
+		type: Array,
+		schema: [String]
+	}
+});
+
 const userSchema = new dynamoose.Schema({
 	username: {
 		type: String,
@@ -7,7 +23,11 @@ const userSchema = new dynamoose.Schema({
 	},
 	name: String,
 	email: String,
-	password: String
+	password: String,
+	levels: {
+		type: Array,
+		schema: [levelSchema]
+	}
 });
 
 const User = dynamoose.model('user', userSchema);

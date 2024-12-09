@@ -37,6 +37,7 @@ export const actions = {
 		const email = data.get('email');
 		const password = data.get('password');
 		const hash = bcrypt.hashSync(password, salt);
+		const levels = [];
 		try {
 			const existingUser = (await User.query('username').eq(username).exec()).toJSON()[0];
 			if (!existingUser) {
@@ -44,7 +45,8 @@ export const actions = {
 					name,
 					username,
 					email,
-					password: hash
+					password: hash,
+					levels
 				});
 				await newUser.save();
 				cookies.set('username', username, { path: '/' });

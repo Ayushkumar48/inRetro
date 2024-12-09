@@ -1,15 +1,41 @@
-import connectDB from '../../../lib/db.js';
-import Level from '$lib/models/Level.js';
-import { json } from '@sveltejs/kit';
+import User from '$lib/models/User';
+import { json, fail } from '@sveltejs/kit';
 
-export async function POST({ request }) {
-	await connectDB();
-	const { level, html, css, js, tasks } = await request.json();
-	const myLevel = new Level({ level, html, css, js, tasks });
+export async function POST({ url, request }) {
 	try {
-		const res = await myLevel.save();
-		return json({ res }, { status: 201 });
+		const username = url.searchParams.get('username');
+		const data = await request.json();
+
+		// Fetch user data
+		const userDataResult = await User.query('username').eq(username).exec();
+		const userData = userDataResult[0];
+
+		if (!userData) {
+			return fail(404, { message: 'User not found.' });
+		}
+
+		// Check if the level already exists
+		let levelExists = false;
+		for (let i = 0; i < userData.levels.length; i++) {
+			if (userData.levels[i].levelId === data.levelId) {
+				// Update existing level
+				userData.levels[i] = data;
+				levelExists = true;
+				break;
+			}
+		}
+
+		// Add a new level if it doesn't exist
+		if (!levelExists) {
+			userData.levels.push(data);
+		}
+
+		// Save the updated user data
+		await userData.save();
+
+		return json({ status: 201, message: 'Code saved successfully.' });
 	} catch (err) {
-		console.log(err);
+		console.error(err);
+		return fail(500, { message: 'Error occurred while saving the code.' });
 	}
 }

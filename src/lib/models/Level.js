@@ -1,10 +1,14 @@
 import dynamoose from 'dynamoose';
 
 const levelSchema = new dynamoose.Schema({
-	level: {
+	levelId: {
 		type: Number,
 		hashKey: true
 	},
+	path: String,
+	language: String,
+	topic: String,
+	color: String,
 	html: String,
 	css: String,
 	js: String,
