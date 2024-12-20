@@ -1,4 +1,5 @@
 <script>
+	import DarkMode from './DarkMode.svelte';
 	import NavLi from './NavLi.svelte';
 	let { username } = $props();
 </script>
@@ -14,6 +15,7 @@
 			<NavLi url="/auth">Login</NavLi>
 		{/if}
 		<NavLi url="/contact">Contact Us</NavLi>
+		<DarkMode />
 	</div>
 </div>
 

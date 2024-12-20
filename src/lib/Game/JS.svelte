@@ -25,7 +25,7 @@
 					padding: { top: 5, right: 5, bottom: 5, left: 5 },
 					overviewRulerLanes: 0,
 					overviewRulerBorder: false,
-					theme: 'vs-dark',
+					theme: 'vs-light',
 					minimap: {
 						enabled: false
 					},
@@ -41,7 +41,7 @@
 	});
 </script>
 
-<div class="flex w-[50%] flex-col gap-2">
-	<div class="text-center font-bold text-white">JS</div>
+<div class="flex w-[50%] flex-col gap-2 rounded-sm ring-2 ring-black">
+	<div class="text-center text-lg font-bold text-slate-500 dark:text-white">JS</div>
 	<div id="js-editor" class=" h-[40vh]"></div>
 </div>

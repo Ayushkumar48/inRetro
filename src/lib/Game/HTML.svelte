@@ -40,7 +40,7 @@
 	});
 </script>
 
-<div class="flex w-[50%] flex-col gap-2">
-	<div class="text-center font-bold text-white">HTML</div>
+<div class="flex w-[50%] flex-col gap-2 rounded-sm ring-2 ring-black">
+	<div class="text-center text-lg font-bold text-slate-500 dark:text-white">HTML</div>
 	<div id="html-editor" class=" h-[40vh]"></div>
 </div>

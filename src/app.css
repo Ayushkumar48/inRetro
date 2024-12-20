@@ -3,10 +3,10 @@
 @import 'tailwindcss/utilities';
 
 @import url('https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:ital,wght@0,300..700;1,300..700&display=swap');
-html{
-    scroll-behavior: smooth;
+html {
+	scroll-behavior: smooth;
 }
-body{
+/* body{
     background: linear-gradient(90deg, #1D1D1D, #020202);
     color: #0bc7be;
-}
+} */

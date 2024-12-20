@@ -13,7 +13,7 @@
 	});
 </script>
 
-<div class="relative size-40 rounded-xl bg-slate-300 p-3 shadow-2xl">
+<div class="relative size-40 rounded-xl bg-slate-300 p-3 shadow-md">
 	<svg class="size-full -rotate-90" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
 		<circle
 			cx="18"

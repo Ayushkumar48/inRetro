@@ -3,10 +3,12 @@
 
 <div class="flex h-full w-full flex-row items-center justify-center gap-32">
 	<div class="ff flex h-full flex-col items-center justify-center gap-4">
-		<div class="flex w-full justify-start text-xl text-emerald-100">Our Moto</div>
+		<div class="flex w-full justify-start text-xl text-emerald-300 dark:text-emerald-100">
+			Our Moto
+		</div>
 		<div class="flex w-full flex-col items-start justify-start gap-4 text-4xl">
 			<p>Accessible Technology</p>
-			<p class="textshadow text-white">Learning</p>
+			<p class="textshadow text-slate-500 dark:text-white">Learning</p>
 		</div>
 		<div class="w-full justify-start text-sm">
 			<p>Make the tech learning accessible to everyone</p>

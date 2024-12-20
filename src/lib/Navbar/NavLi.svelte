@@ -18,7 +18,7 @@
 	}
 </script>
 
-<button onclick={handleClick} class="hover:shadow-xl">
+<button onclick={handleClick} class="dark:hover:shadow-xl">
 	<span class="glow-text duration-200 ease-in-out">{@render children()}</span>
 </button>
 

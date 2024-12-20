@@ -101,14 +101,14 @@
 
 <div class="flex flex-col gap-2">
 	<div class="flex flex-row justify-between">
-		<div>
-			<div class="text-2xl font-semibold text-white">
+		<div class="text-slate-600 dark:text-white">
+			<div class="text-2xl font-semibold">
 				Path: {level.path}
 			</div>
-			<div class="text-2xl font-semibold text-white">
+			<div class="text-2xl font-semibold">
 				Level: {level.levelId}
 			</div>
-			<div class="text-2xl font-semibold text-white">
+			<div class="text-2xl font-semibold">
 				{level.language} -
 				{level.topic}
 			</div>
