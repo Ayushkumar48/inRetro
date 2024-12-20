@@ -2,6 +2,8 @@
 	import HTML from '$lib/Game/HTML.svelte';
 	import CSS from '$lib/Game/CSS.svelte';
 	import JS from '$lib/Game/JS.svelte';
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import Description from '../../../lib/Game/Description.svelte';
 	import { toast } from 'svelte-sonner';
 	let { data } = $props();
@@ -68,7 +70,8 @@
 			language: level.language,
 			topic: level.topic,
 			color: level.color,
-			tasks
+			tasks,
+			status: true
 		};
 
 		try {
@@ -97,6 +100,21 @@
 			toast.error('An unexpected error occurred.');
 		}
 	}
+	onMount(() => {
+		if (browser) {
+			const handleCtrlS = (event) => {
+				if (event.ctrlKey && event.key === 's') {
+					event.preventDefault();
+					saveCode();
+				}
+			};
+
+			window.addEventListener('keydown', handleCtrlS);
+			return () => {
+				window.removeEventListener('keydown', handleCtrlS);
+			};
+		}
+	});
 </script>
 
 <div class="flex flex-col gap-2">
@@ -130,9 +148,9 @@
 		<CSS sourceCode={cssCode} updatePreview={(type, code) => updatePreview(type, code)} />
 		<JS sourceCode={jsCode} updatePreview={(type, code) => updatePreview(type, code)} />
 	</div>
-	<div class="mt-5 flex flex-col gap-4">
+	<div class="flex flex-col gap-1">
 		<div class="flex flex-row items-center justify-between">
-			<h2 class="text-white">Live Preview:</h2>
+			<h2 class="text-black dark:text-white">Live Preview:</h2>
 			{#if checkVal}
 				<button
 					class="rounded-lg bg-blue-600 px-8 py-[6px] text-white shadow-2xl duration-200 ease-in-out hover:bg-blue-500"
@@ -157,7 +175,7 @@
 		<!-- svelte-ignore a11y_missing_attribute -->
 		<iframe
 			id="preview"
-			class="min-h-[50vh] w-full rounded-lg border-[1px] border-[#ddd]"
+			class="min-h-[50vh] w-full rounded-lg border-4 border-slate-700 dark:border-none"
 			srcdoc={finalCode}
 		></iframe>
 	</div>

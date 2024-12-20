@@ -10,7 +10,7 @@ export async function load({ cookies }) {
 	const userResult = await User.query('username').eq(username).exec();
 	let user = userResult.map((item) => item.toJSON())[0];
 	const levelsResult = await Level.scan().exec();
-	const levels = levelsResult.map((item) => item.toJSON());
+	const levels = levelsResult.map((item) => item.toJSON()).sort((a, b) => a.levelId - b.levelId);
 	user = { user: user.username, levels: user.levels };
 	return { username, user, levels };
 }

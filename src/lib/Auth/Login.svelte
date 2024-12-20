@@ -21,13 +21,11 @@
 </script>
 
 <div
-	class="flex h-[75%] flex-row items-center justify-between text-white"
+	class="flex h-[75%] flex-row items-center justify-between text-black dark:text-white"
 	out:blur={{ easing: quintOut }}
 	in:fade={{ delay: 300, easing: quintIn }}
 >
-	<div class="flex h-full w-[55%] items-center justify-center bg-blue-400">
-		<img src="./loginimg.jpg" alt="" class="h-full w-full object-cover" />
-	</div>
+	<img src="./loginimg.jpg" alt="" class="h-full w-[50%] object-cover" />
 	<div class="flex h-full w-[45%] flex-col items-center justify-center gap-2">
 		<form
 			class="flex flex-col items-center justify-center gap-2"
@@ -59,7 +57,7 @@
 				</div>
 			</div>
 			<button
-				class="rounded-md bg-blue-600 px-3 py-1 shadow-2xl duration-150 ease-in-out hover:bg-blue-700"
+				class="rounded-md bg-blue-600 px-3 py-1 text-white shadow-2xl duration-150 ease-in-out hover:bg-blue-700"
 			>
 				Login
 			</button>
@@ -67,7 +65,7 @@
 		<div class="text-center">
 			Doesn't have an account yet,
 			<button
-				class="text-blue-500 duration-75 ease-in-out hover:text-blue-400"
+				class="text-blue-600 duration-75 ease-in-out hover:text-blue-500"
 				onclick={handleClick}
 			>
 				create one

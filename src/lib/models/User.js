@@ -5,7 +5,7 @@ const levelSchema = new dynamoose.Schema({
 	path: String,
 	language: String,
 	topic: String,
-	status: String,
+	status: Boolean,
 	color: String,
 	html: String,
 	css: String,

@@ -25,6 +25,5 @@ export async function load({ params, cookies }) {
 	if (!levelData) {
 		error(404, { message: 'Enter a valid level.' });
 	}
-	console.log(levelData);
 	return { level: levelData };
 }

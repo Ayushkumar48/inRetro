@@ -5,7 +5,7 @@
 	let login = $state(true);
 </script>
 
-<div class="h-full w-full bg-[#181818]">
+<div class="h-full w-full bg-slate-50 dark:bg-[#181818]">
 	{#if login}
 		<Login bind:login bind:form />
 	{:else}

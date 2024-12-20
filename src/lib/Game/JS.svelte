@@ -1,6 +1,7 @@
 <script>
 	const { sourceCode, updatePreview } = $props();
 	let editorInstance = $state(0);
+	let theme = $state('vs-dark');
 
 	$effect(() => {
 		let scriptElement = document.createElement('script');
@@ -25,7 +26,7 @@
 					padding: { top: 5, right: 5, bottom: 5, left: 5 },
 					overviewRulerLanes: 0,
 					overviewRulerBorder: false,
-					theme: 'vs-light',
+					theme: document.documentElement.classList.contains('dark') ? 'vs-dark' : 'vs-light',
 					minimap: {
 						enabled: false
 					},
@@ -41,7 +42,11 @@
 	});
 </script>
 
-<div class="flex w-[50%] flex-col gap-2 rounded-sm ring-2 ring-black">
-	<div class="text-center text-lg font-bold text-slate-500 dark:text-white">JS</div>
+<div class="flex w-[50%] flex-col rounded-sm ring-2 ring-black">
+	<div
+		class="bg-neutral-300 text-center text-lg font-bold text-slate-500 dark:bg-neutral-800 dark:text-white"
+	>
+		JS
+	</div>
 	<div id="js-editor" class=" h-[40vh]"></div>
 </div>

@@ -17,7 +17,7 @@
 	<div
 		class="flex h-[30%] items-center justify-center rounded-b-xl bg-neutral-300 p-3 dark:bg-white"
 	>
-		{level.status}
+		{level?.status === true ? 'Level Completed' : 'Yet to be completed'}
 	</div>
 	<!-- svelte-ignore a11y_consider_explicit_label -->
 	<button

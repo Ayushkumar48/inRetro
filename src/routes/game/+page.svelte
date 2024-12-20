@@ -16,30 +16,43 @@
 
 <div class="mt-10 flex flex-col gap-8 text-white">
 	<div class="flex h-full w-full flex-col gap-3">
-		<div class="text-xl">Progress:</div>
+		<div class="text-xl text-black dark:text-white">Progress:</div>
 		<ProgressBar bind:progress />
 	</div>
 	<div class="flex h-full w-full flex-col gap-3">
-		<div class="text-xl">Continue Journey:</div>
-		<LevelCard level={levels[user.levels.length]} />
+		<div class="text-xl text-black dark:text-white">Continue Journey:</div>
+		{#if user.levels.length < levels.length}
+			<LevelCard level={levels[user.levels.length]} />
+		{:else}
+			<div>You completed all the levels.</div>
+		{/if}
 	</div>
 	<div class="flex h-full w-full flex-col gap-3">
-		<div class="text-xl">Levels Completed:</div>
+		<div class="text-xl text-black dark:text-white">Levels Completed:</div>
 		<div class="flex flex-row flex-wrap gap-4">
 			{#if user.levels.length !== 0}
 				{#each user.levels as level}
 					<LevelCard {level} />
 				{/each}
 			{:else}
-				<div>Start a level from continue journey to show the progress.</div>
+				<div class="text-black dark:text-white">
+					Start a level from 'continue journey' to show the progress.
+				</div>
 			{/if}
 		</div>
 	</div>
 	<div class="flex h-full w-full flex-col gap-3">
-		<div class="text-xl">All Levels:</div>
+		<div class="text-xl text-black dark:text-white">All Levels:</div>
 		<div class="flex flex-row flex-wrap gap-4">
+			{#if user.levels.length !== 0}
+				{#each user.levels as level}
+					<LevelCard {level} />
+				{/each}
+			{/if}
 			{#each levels as level}
-				<LevelCard {level} />
+				{#if user.levels.length < level.levelId}
+					<LevelCard {level} />
+				{/if}
 			{/each}
 		</div>
 	</div>
