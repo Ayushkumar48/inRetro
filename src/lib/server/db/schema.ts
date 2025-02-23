@@ -1,20 +1,41 @@
-import { pgTable, serial, text, integer, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, timestamp, serial, json, jsonb } from 'drizzle-orm/pg-core';
 
-export const user = pgTable('user', {
+export const users = pgTable('users', {
 	id: text('id').primaryKey(),
 	age: integer('age'),
+	name: text('name'),
+	email: text('email').notNull().unique(),
 	username: text('username').notNull().unique(),
-	passwordHash: text('password_hash').notNull()
+	password: text('password').notNull(),
+	image: text('image'),
+	createdAt: timestamp('created_at').defaultNow().notNull()
 });
 
 export const session = pgTable('session', {
 	id: text('id').primaryKey(),
 	userId: text('user_id')
 		.notNull()
-		.references(() => user.id),
+		.references(() => users.id),
 	expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull()
 });
 
+export const allLevels = pgTable('all_levels', {
+	id: serial('id').primaryKey(),
+	levelDetails: jsonb('level_details').$type<LevelDetails>().notNull(),
+	files: json('files').notNull(),
+	createdAt: timestamp('created_at').defaultNow(),
+	template: text('template'),
+	startScript: text('start_script')
+});
+
+type LevelDetails = {
+	path: string;
+	language: string;
+	details: string;
+	isCompleted: boolean;
+};
+export type Level = typeof allLevels.$inferSelect;
+
 export type Session = typeof session.$inferSelect;
 
-export type User = typeof user.$inferSelect;
+export type User = typeof users.$inferSelect;

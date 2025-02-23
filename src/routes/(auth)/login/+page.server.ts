@@ -1,128 +1,142 @@
-// import { hash, verify } from '@node-rs/argon2';
-// import { encodeBase32LowerCase } from '@oslojs/encoding';
-import { fail, redirect, type Actions } from '@sveltejs/kit';
-// import { eq } from 'drizzle-orm';
-// import * as auth from '$lib/server/auth';
-// import { db } from '$lib/server/db';
-// import * as table from '$lib/server/db/schema';
+import { hash, verify } from '@node-rs/argon2';
+import { encodeBase32LowerCase } from '@oslojs/encoding';
+import { type Actions } from '@sveltejs/kit';
+import * as auth from '$lib/server/auth';
 import type { PageServerLoad } from './$types';
-import { message, superValidate } from 'sveltekit-superforms';
+import { message, superValidate, fail } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { userSchema } from '$lib/client/schema';
+import { db } from '$lib/server/db';
+import { eq, or } from 'drizzle-orm';
+import { v4 as uuidv4 } from 'uuid';
+import { users } from '$lib/server/db/schema';
+import containerClient from '$lib/server/db/azure.config';
 
-export const load: PageServerLoad = async (event) => {
-	if (event.locals.user) {
-		return redirect(302, '/');
-	}
+export const load: PageServerLoad = async () => {
 	return {
-		login: await superValidate(zod(userSchema)),
 		signup: await superValidate(zod(userSchema))
 	};
 };
 
 export const actions: Actions = {
-	default: async (event) => {
-		const form = await superValidate(event, zod(userSchema));
-		console.log(form);
-		if (!form.valid) {
-			return fail(400, {
-				form
+	login: async (event) => {
+		const formData = await event.request.formData();
+		const username = formData.get('username') as string;
+		const password = formData.get('password') as string;
+		try {
+			const results = await db.select().from(users).where(eq(users.username, username));
+
+			const existingUser = results.at(0);
+			if (!existingUser) {
+				return fail(400, { status: 400, message: 'Incorrect username or password' });
+			}
+
+			const validPassword = await verify(existingUser.password, password, {
+				memoryCost: 19456,
+				timeCost: 2,
+				outputLen: 32,
+				parallelism: 1
 			});
+			if (!validPassword) {
+				return fail(400, { status: 400, message: 'Incorrect credentials' });
+			}
+
+			const sessionToken = auth.generateSessionToken();
+			const session = await auth.createSession(sessionToken, existingUser.id);
+			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+
+			return { status: 200, message: 'User logged in!' };
+		} catch (error) {
+			console.error(error);
+			return fail(500, { status: 500, message: 'An error has occured!' });
+		}
+	},
+
+	signup: async (event) => {
+		const form = await superValidate(event, zod(userSchema));
+		if (!form.valid) {
+			return fail(400, { form });
 		}
 
-		return message(form, 'Form posted successfully!');
+		const file = form.data.image;
+		let imageUrl: string | null = null;
+
+		if (file) {
+			try {
+				const uniqueFileName = `${uuidv4()}-${file.name}`;
+				const blockBlobClient = containerClient.getBlockBlobClient(uniqueFileName);
+
+				const arrayBuffer = await file.arrayBuffer();
+				const content = new Uint8Array(arrayBuffer);
+
+				await blockBlobClient.upload(content, content.length, {
+					blobHTTPHeaders: { blobContentType: file.type }
+				});
+
+				imageUrl = blockBlobClient.url;
+			} catch (error) {
+				console.error('File upload error:', error);
+				return message(
+					form,
+					{ status: 'error', text: 'Failed to upload profile picture' },
+					{ status: 500 }
+				);
+			}
+		}
+
+		try {
+			const userId = generateUserId();
+			const passwordHash = await hash(form.data.password as string, {
+				memoryCost: 19456,
+				timeCost: 2,
+				outputLen: 32,
+				parallelism: 1
+			});
+
+			const [existingUser] = await db
+				.select()
+				.from(users)
+				.where(
+					or(
+						eq(users.username, form.data.username as string),
+						eq(users.email, form.data.email as string)
+					)
+				);
+
+			if (existingUser?.email === form.data.email) {
+				return message(form, { status: 'error', text: 'Email already exists.' }, { status: 403 });
+			}
+			if (existingUser?.username === form.data.username) {
+				return message(
+					form,
+					{ status: 'error', text: 'Username already exists.' },
+					{ status: 403 }
+				);
+			}
+
+			await db.insert(users).values({
+				id: userId,
+				name: form.data.name,
+				username: form.data.username,
+				email: form.data.email,
+				password: passwordHash,
+				image: imageUrl
+			});
+
+			const sessionToken = auth.generateSessionToken();
+			const session = await auth.createSession(sessionToken, userId);
+			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+
+			return message(form, { status: 'success', text: 'Account created successfully!' });
+		} catch (error) {
+			console.error(error);
+			return message(form, { status: 'error', text: 'An error has occurred' }, { status: 500 });
+		}
 	}
 };
 
-// export const actions: Actions = {
-// 	login: async (event) => {
-// 		const formData = await event.request.formData();
-// 		const username = formData.get('username');
-// 		const password = formData.get('password');
-
-// 		if (!validateUsername(username)) {
-// 			return fail(400, {
-// 				message: 'Invalid username (min 3, max 31 characters, alphanumeric only)'
-// 			});
-// 		}
-// 		if (!validatePassword(password)) {
-// 			return fail(400, { message: 'Invalid password (min 6, max 255 characters)' });
-// 		}
-
-// 		const results = await db.select().from(table.user).where(eq(table.user.username, username));
-
-// 		const existingUser = results.at(0);
-// 		if (!existingUser) {
-// 			return fail(400, { message: 'Incorrect username or password' });
-// 		}
-
-// 		const validPassword = await verify(existingUser.passwordHash, password, {
-// 			memoryCost: 19456,
-// 			timeCost: 2,
-// 			outputLen: 32,
-// 			parallelism: 1
-// 		});
-// 		if (!validPassword) {
-// 			return fail(400, { message: 'Incorrect username or password' });
-// 		}
-
-// 		const sessionToken = auth.generateSessionToken();
-// 		const session = await auth.createSession(sessionToken, existingUser.id);
-// 		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
-
-// 		return redirect(302, '/demo/lucia');
-// 	},
-// 	register: async (event) => {
-// 		const formData = await event.request.formData();
-// 		const username = formData.get('username');
-// 		const password = formData.get('password');
-
-// 		if (!validateUsername(username)) {
-// 			return fail(400, { message: 'Invalid username' });
-// 		}
-// 		if (!validatePassword(password)) {
-// 			return fail(400, { message: 'Invalid password' });
-// 		}
-
-// 		const userId = generateUserId();
-// 		const passwordHash = await hash(password, {
-// 			// recommended minimum parameters
-// 			memoryCost: 19456,
-// 			timeCost: 2,
-// 			outputLen: 32,
-// 			parallelism: 1
-// 		});
-
-// 		try {
-// 			await db.insert(table.user).values({ id: userId, username, passwordHash });
-
-// 			const sessionToken = auth.generateSessionToken();
-// 			const session = await auth.createSession(sessionToken, userId);
-// 			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
-// 		} catch (e) {
-// 			console.error('Error occured:', e);
-// 			return fail(500, { message: 'An error has occurred' });
-// 		}
-// 		return redirect(302, '/demo/lucia');
-// 	}
-// };
-
-// function generateUserId() {
-// 	// ID with 120 bits of entropy, or about the same as UUID v4.
-// 	const bytes = crypto.getRandomValues(new Uint8Array(15));
-// 	const id = encodeBase32LowerCase(bytes);
-// 	return id;
-// }
-
-// function validateUsername(username: unknown): username is string {
-// 	return (
-// 		typeof username === 'string' &&
-// 		username.length >= 3 &&
-// 		username.length <= 31 &&
-// 		/^[a-z0-9_-]+$/.test(username)
-// 	);
-// }
-
-// function validatePassword(password: unknown): password is string {
-// 	return typeof password === 'string' && password.length >= 6 && password.length <= 255;
-// }
+function generateUserId() {
+	const bytes = crypto.getRandomValues(new Uint8Array(15));
+	const id = encodeBase32LowerCase(bytes);
+	return id;
+}

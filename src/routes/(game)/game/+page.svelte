@@ -1,7 +1,15 @@
-<script>
-	import Levels from '$lib/components/custom/game/Levels.svelte';
+<script lang="ts">
+	import Level from '$lib/components/custom/game/Level.svelte';
+
+	let { data } = $props();
 </script>
 
-<div class="w-full px-16 py-6 flex justify-center items-center flex-1">
-	<Levels />
+<div
+	class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-8 gap-x-4 md:px-6 px-4 lg:px-8 py-10 self-center"
+>
+	{#if data.levels}
+		{#each data.levels as level}
+			<Level {level} />
+		{/each}
+	{/if}
 </div>

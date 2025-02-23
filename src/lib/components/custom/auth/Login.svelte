@@ -3,61 +3,47 @@
 	import { Button } from '$lib/components/ui/button/index';
 	import { Input } from '$lib/components/ui/input/index';
 	import { cn } from '$lib/utils.js';
-	import * as Form from '$lib/components/ui/form/index';
-	import { userSchema, type UserSchema } from '$lib/client/schema';
-	import SuperDebug, { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
-	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { enhance } from '$app/forms';
+	import Label from '$lib/components/ui/label/label.svelte';
+	import type { ActionData } from '../../../../routes/(auth)/login/$types';
+	import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation';
 
-	let { login }: { login: SuperValidated<Infer<UserSchema>> } = $props();
-
-	const form = superForm(login, {
-		validators: zodClient(userSchema),
-		taintedMessage: 'Are you sure you want to leave?'
-	});
-	const { form: formData, enhance, errors } = form;
-
+	let { form = $bindable() }: { form: ActionData } = $props();
 	let className = $state<string | undefined | null>(undefined);
 	export { className as class };
+	$effect(() => {
+		if (form?.status === 200) {
+			toast.success(form?.message);
+			setTimeout(() => {
+				goto('/game');
+			}, 10000);
+		}
+		if (form?.status === 400 || form?.status === 500) {
+			toast.error(form?.message);
+		}
+	});
 
 	let isLoading = $state<boolean>(false);
-	async function onSubmit() {
-		isLoading = true;
-
-		setTimeout(() => {
-			isLoading = false;
-		}, 3000);
-	}
 </script>
 
 <div class={cn('grid gap-6', className)}>
-	<!-- <SuperDebug data={$formData} /> -->
 	<form method="POST" use:enhance action="?/login">
 		<div class="grid gap-2">
-			<Form.Field {form} name="username">
-				<Form.Control>
-					{#snippet children({ props }: { props: Record<string, any> })}
-						<Form.Label>Username</Form.Label>
-						<Input {...props} bind:value={$formData.username} />
-					{/snippet}
-				</Form.Control>
-				<Form.FieldErrors />
-			</Form.Field>
-			<Form.Field {form} name="password">
-				<Form.Control>
-					{#snippet children({ props }: { props: Record<string, any> })}
-						<Form.Label>Password</Form.Label>
-						<Input {...props} type="password" bind:value={$formData.password} />
-					{/snippet}
-				</Form.Control>
-				<Form.FieldErrors />
-			</Form.Field>
-
-			<Form.Button type="submit" disabled={isLoading}>
+			<div>
+				<Label>Username</Label>
+				<Input name="username" />
+			</div>
+			<div>
+				<Label>Password</Label>
+				<Input type="password" name="password" />
+			</div>
+			<Button type="submit" disabled={isLoading}>
 				{#if isLoading}
 					<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
 				{/if}
 				Login
-			</Form.Button>
+			</Button>
 		</div>
 	</form>
 	<div class="relative">

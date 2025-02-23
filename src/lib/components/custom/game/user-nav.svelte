@@ -1,23 +1,36 @@
 <script lang="ts">
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index';
 	import * as Avatar from '$lib/components/ui/avatar/index';
-	import { Button } from '$lib/components/ui/button/index';
+	import { goto } from '$app/navigation';
+	import { toast } from 'svelte-sonner';
+	import { user } from '$lib/stores/store.svelte';
+	async function handleLogout() {
+		const res = await fetch('/api/logout');
+		if (res.ok) {
+			toast.success('User logged out!');
+			user.current = null;
+			goto('/');
+		}
+	}
 </script>
 
 <DropdownMenu.Root>
-	<DropdownMenu.Trigger class="flex items-center">
-		<Button variant="ghost" class="relative h-8 w-8 rounded-full">
-			<Avatar.Root class="h-8 w-8 select-none">
+	<DropdownMenu.Trigger class="flex items-center relative h-8 w-8 rounded-full">
+		<Avatar.Root class="h-8 w-8 select-none">
+			{#if user.current?.image}
+				<Avatar.Image src={user.current?.image} alt="avatar" />
+			{:else}
 				<Avatar.Image src="/avatars/girl.png" alt="avatar" />
-				<Avatar.Fallback>SC</Avatar.Fallback>
-			</Avatar.Root>
-		</Button>
+			{/if}
+		</Avatar.Root>
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content class="w-56" align="end">
 		<DropdownMenu.Label class="font-normal">
 			<div class="flex flex-col space-y-1">
-				<p class="text-sm font-medium leading-none">Ayush Kumar</p>
-				<p class="text-muted-foreground text-xs leading-none">Ayushkumar48</p>
+				<p class="text-sm font-medium leading-none">{user.current?.name || 'User'}</p>
+				<p class="text-muted-foreground text-xs leading-none">
+					{user.current?.username || 'Username'}
+				</p>
 			</div>
 		</DropdownMenu.Label>
 		<DropdownMenu.Separator />
@@ -37,7 +50,7 @@
 			<DropdownMenu.Item>New Team</DropdownMenu.Item>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
-		<DropdownMenu.Item>
+		<DropdownMenu.Item onclick={handleLogout}>
 			Log out
 			<DropdownMenu.Shortcut>⇧⌘Q</DropdownMenu.Shortcut>
 		</DropdownMenu.Item>

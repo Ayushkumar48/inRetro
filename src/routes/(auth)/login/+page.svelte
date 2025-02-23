@@ -4,10 +4,10 @@
 	import { Button } from '$lib/components/ui/button/index';
 	import { fade, fly, slide } from 'svelte/transition';
 	import { cubicInOut, quintIn } from 'svelte/easing';
-	import type { PageData } from './$types';
+	import type { ActionData, PageData } from './$types';
 	import { onMount } from 'svelte';
 
-	let { data }: { data: PageData } = $props();
+	let { data, form }: { data: PageData; form: ActionData } = $props();
 	let login = $state<boolean>(true);
 	let transitioning = $state<boolean>(false);
 	let containerHeight = $state<number>(0);
@@ -107,7 +107,7 @@
 						in:fly={{ x: -30, duration: 500, delay: 300, easing: cubicInOut }}
 						out:fly={{ x: 30, duration: 300, easing: quintIn }}
 					>
-						<Login login={data.login} />
+						<Login bind:form />
 					</div>
 				{:else}
 					<div
