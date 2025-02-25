@@ -7,7 +7,6 @@
 	import { LoaderCircle, Save } from 'lucide-svelte';
 	import { mode } from 'mode-watcher';
 	import { onMount } from 'svelte';
-	import { page } from '$app/state';
 	let { data } = $props();
 
 	type TemplateType =
@@ -42,7 +41,6 @@
 	async function saveCode() {
 		if (editorVM) {
 			const files = await editorVM.getFsSnapshot();
-			console.log(files);
 		}
 	}
 </script>

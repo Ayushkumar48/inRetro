@@ -1,7 +1,8 @@
 <script lang="ts">
 	import Level from '$lib/components/custom/game/Level.svelte';
+	import type { PageData } from './$types';
 
-	let { data } = $props();
+	let { data }: { data: PageData } = $props();
 </script>
 
 <div

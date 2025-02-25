@@ -1,13 +1,15 @@
-import { pgTable, text, integer, timestamp, serial, json, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, serial, json, jsonb, date } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
 	id: text('id').primaryKey(),
-	age: integer('age'),
 	name: text('name'),
 	email: text('email').notNull().unique(),
 	username: text('username').notNull().unique(),
 	password: text('password').notNull(),
 	image: text('image'),
+	dob: date('dob'),
+	bio: text('bio'),
+	urls: text('urls').array(),
 	createdAt: timestamp('created_at').defaultNow().notNull()
 });
 
@@ -23,12 +25,11 @@ export const allLevels = pgTable('all_levels', {
 	id: serial('id').primaryKey(),
 	levelDetails: jsonb('level_details').$type<LevelDetails>().notNull(),
 	files: json('files').notNull(),
-	createdAt: timestamp('created_at').defaultNow(),
 	template: text('template'),
 	startScript: text('start_script')
 });
 
-type LevelDetails = {
+export type LevelDetails = {
 	path: string;
 	language: string;
 	details: string;

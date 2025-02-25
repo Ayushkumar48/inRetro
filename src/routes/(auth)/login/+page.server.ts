@@ -48,7 +48,7 @@ export const actions: Actions = {
 			return { status: 200, message: 'User logged in!' };
 		} catch (error) {
 			console.error(error);
-			return fail(500, { status: 500, message: 'An error has occured!' });
+			return fail(500, { status: 500, message: 'An error has occurred!' });
 		}
 	},
 
@@ -113,7 +113,6 @@ export const actions: Actions = {
 					{ status: 403 }
 				);
 			}
-
 			await db.insert(users).values({
 				id: userId,
 				name: form.data.name,

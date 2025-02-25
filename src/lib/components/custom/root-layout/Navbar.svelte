@@ -1,25 +1,8 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/button/button.svelte';
+	import { user } from '$lib/stores/store.svelte';
+	import UserNav from '../game/user-nav.svelte';
 	import DarkToggle from './DarkToggle.svelte';
-	type Link = { name: String; href: string };
-
-	let navlis: Link[] = [
-		{
-			name: 'Home',
-			href: '/'
-		},
-		{
-			name: 'Game',
-			href: '/game'
-		},
-		{
-			name: 'Login',
-			href: '/login'
-		},
-		{
-			name: 'Contact Us',
-			href: '/contact-us'
-		}
-	];
 </script>
 
 <div
@@ -28,10 +11,15 @@
 	<h1 class="text-3xl font-semibold" style="font-family: 'Spline Sans Mono';">
 		<a href="/"> inRetro </a>
 	</h1>
-	<div class="flex gap-x-5 items-center">
-		{#each navlis as item, i}
-			<a href={item.href}>{item.name}</a>
-		{/each}
+	<div class="flex items-center gap-x-6">
+		{#if user.current}
+			<UserNav />
+		{:else}
+			<div class="gap-x-2 flex">
+				<Button href="/login" variant="ghost">Login</Button>
+				<Button href="/login">Get Started</Button>
+			</div>
+		{/if}
 		<DarkToggle />
 	</div>
 </div>

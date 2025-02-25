@@ -6,7 +6,6 @@ import { eq } from 'drizzle-orm';
 export async function POST({ request }) {
 	try {
 		const data = await request.json();
-		console.log(data);
 		await db.insert(allLevels).values(data);
 		return json({ success: true });
 	} catch (error) {
@@ -19,7 +18,7 @@ export async function PUT({ request }) {
 		const data = await request.json();
 		await db
 			.update(allLevels)
-			.set({ files: data.files })
+			.set({ files: JSON.stringify(data.files) })
 			.where(eq(allLevels.id, Number(data.id)));
 		return json({ success: true });
 	} catch (error) {
