@@ -54,7 +54,12 @@
 			<span class="bg-background text-muted-foreground px-2"> Or continue with </span>
 		</div>
 	</div>
-	<Button variant="outline" type="button" disabled={isLoading}>
+	<Button
+		variant="outline"
+		type="button"
+		disabled={isLoading}
+		onclick={() => goto('/login/github')}
+	>
 		{#if isLoading}
 			<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
 		{:else}

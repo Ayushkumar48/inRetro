@@ -1,5 +1,4 @@
 import { hash, verify } from '@node-rs/argon2';
-import { encodeBase32LowerCase } from '@oslojs/encoding';
 import { type Actions } from '@sveltejs/kit';
 import * as auth from '$lib/server/auth';
 import type { PageServerLoad } from './$types';
@@ -27,8 +26,16 @@ export const actions: Actions = {
 			const results = await db.select().from(users).where(eq(users.username, username));
 
 			const existingUser = results.at(0);
+
 			if (!existingUser) {
 				return fail(400, { status: 400, message: 'Incorrect username or password' });
+			}
+
+			if (!existingUser.password) {
+				return fail(400, {
+					status: 400,
+					message: 'This account is authorized with Github. Please login using github.'
+				});
 			}
 
 			const validPassword = await verify(existingUser.password, password, {
@@ -37,6 +44,7 @@ export const actions: Actions = {
 				outputLen: 32,
 				parallelism: 1
 			});
+
 			if (!validPassword) {
 				return fail(400, { status: 400, message: 'Incorrect credentials' });
 			}
@@ -85,7 +93,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			const userId = generateUserId();
+			const userId = auth.generateUserId();
 			const passwordHash = await hash(form.data.password as string, {
 				memoryCost: 19456,
 				timeCost: 2,
@@ -106,6 +114,7 @@ export const actions: Actions = {
 			if (existingUser?.email === form.data.email) {
 				return message(form, { status: 'error', text: 'Email already exists.' }, { status: 403 });
 			}
+
 			if (existingUser?.username === form.data.username) {
 				return message(
 					form,
@@ -113,6 +122,7 @@ export const actions: Actions = {
 					{ status: 403 }
 				);
 			}
+
 			await db.insert(users).values({
 				id: userId,
 				name: form.data.name,
@@ -133,9 +143,3 @@ export const actions: Actions = {
 		}
 	}
 };
-
-function generateUserId() {
-	const bytes = crypto.getRandomValues(new Uint8Array(15));
-	const id = encodeBase32LowerCase(bytes);
-	return id;
-}

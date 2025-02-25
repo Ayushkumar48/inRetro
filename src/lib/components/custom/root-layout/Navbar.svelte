@@ -13,6 +13,7 @@
 	</h1>
 	<div class="flex items-center gap-x-6">
 		{#if user.current}
+			<Button href="/game" variant="secondary">Game</Button>
 			<UserNav />
 		{:else}
 			<div class="gap-x-2 flex">

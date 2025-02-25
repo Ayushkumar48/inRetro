@@ -16,18 +16,18 @@
 
 	function toggleForm() {
 		transitioning = true;
-		containerHeight = login ? signupRef?.offsetHeight || 400 : loginRef?.offsetHeight || 300;
+		containerHeight = login ? signupRef?.offsetHeight || 350 : loginRef?.offsetHeight || 300;
 		setTimeout(() => {
 			login = !login;
 			setTimeout(() => {
-				containerHeight = login ? loginRef?.offsetHeight || 300 : signupRef?.offsetHeight || 400;
+				containerHeight = login ? loginRef?.offsetHeight || 300 : signupRef?.offsetHeight || 350;
 				transitioning = false;
 			}, 10);
 		}, 100);
 	}
 
 	onMount(() => {
-		containerHeight = login ? loginRef?.offsetHeight || 300 : signupRef?.offsetHeight || 400;
+		containerHeight = login ? loginRef?.offsetHeight || 300 : signupRef?.offsetHeight || 350;
 	});
 </script>
 

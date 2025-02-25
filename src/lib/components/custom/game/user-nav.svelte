@@ -9,7 +9,7 @@
 		if (res.ok) {
 			toast.success('User logged out!');
 			user.current = null;
-			goto('/');
+			window.location.href = '/';
 		}
 	}
 </script>

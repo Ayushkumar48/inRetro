@@ -4,6 +4,7 @@ import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeBase64url, encodeHexLowerCase } from '@oslojs/encoding';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
+import { encodeBase32LowerCase } from '@oslojs/encoding';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -30,18 +31,7 @@ export async function validateSessionToken(token: string) {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const [result] = await db
 		.select({
-			user: {
-				id: table.users.id,
-				username: table.users.username,
-				email: table.users.email,
-				image: table.users.image,
-				name: table.users.name,
-				dob: table.users.dob,
-				bio: table.users.bio,
-				urls: table.users.urls,
-				password: table.users.password,
-				createdAt: table.users.createdAt
-			},
+			user: table.users,
 			session: table.session
 		})
 		.from(table.session)
@@ -89,4 +79,28 @@ export function deleteSessionTokenCookie(event: RequestEvent) {
 	event.cookies.delete(sessionCookieName, {
 		path: '/'
 	});
+}
+
+export function generateUserId() {
+	const bytes = crypto.getRandomValues(new Uint8Array(15));
+	const id = encodeBase32LowerCase(bytes);
+	return id;
+}
+
+export async function getUserFromGitHubId(githubUserId: number) {
+	const [existingUser] = await db
+		.select()
+		.from(table.users)
+		.where(eq(table.users.githubId, githubUserId));
+	return existingUser;
+}
+
+export async function createUser(githubUserId: number, githubUsername: string) {
+	const userId = generateUserId();
+	await db
+		.insert(table.users)
+		.values({ id: userId, githubId: githubUserId, username: githubUsername })
+		.returning();
+	const [user] = await db.select().from(table.users).where(eq(table.users.id, userId));
+	return user;
 }
