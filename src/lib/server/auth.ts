@@ -6,6 +6,15 @@ import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 import { encodeBase32LowerCase } from '@oslojs/encoding';
 
+type GitHubUser = {
+	githubId: number;
+	username: string;
+	name: string;
+	email: string;
+	avatarUrl: string;
+	bio: string;
+};
+
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
 export const sessionCookieName = 'auth-session';
@@ -95,11 +104,19 @@ export async function getUserFromGitHubId(githubUserId: number) {
 	return existingUser;
 }
 
-export async function createUser(githubUserId: number, githubUsername: string) {
+export async function createUser(userDetails: GitHubUser) {
 	const userId = generateUserId();
 	await db
 		.insert(table.users)
-		.values({ id: userId, githubId: githubUserId, username: githubUsername })
+		.values({
+			id: userId,
+			githubId: userDetails.githubId,
+			username: userDetails.username,
+			name: userDetails.name,
+			email: userDetails.email,
+			image: userDetails.avatarUrl,
+			bio: userDetails.bio
+		})
 		.returning();
 	const [user] = await db.select().from(table.users).where(eq(table.users.id, userId));
 	return user;

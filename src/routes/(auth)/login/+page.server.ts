@@ -66,41 +66,7 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 
-		const file = form.data.image;
-		let imageUrl: string | null = null;
-
-		if (file) {
-			try {
-				const uniqueFileName = `${uuidv4()}-${file.name}`;
-				const blockBlobClient = containerClient.getBlockBlobClient(uniqueFileName);
-
-				const arrayBuffer = await file.arrayBuffer();
-				const content = new Uint8Array(arrayBuffer);
-
-				await blockBlobClient.upload(content, content.length, {
-					blobHTTPHeaders: { blobContentType: file.type }
-				});
-
-				imageUrl = blockBlobClient.url;
-			} catch (error) {
-				console.error('File upload error:', error);
-				return message(
-					form,
-					{ status: 'error', text: 'Failed to upload profile picture' },
-					{ status: 500 }
-				);
-			}
-		}
-
 		try {
-			const userId = auth.generateUserId();
-			const passwordHash = await hash(form.data.password as string, {
-				memoryCost: 19456,
-				timeCost: 2,
-				outputLen: 32,
-				parallelism: 1
-			});
-
 			const [existingUser] = await db
 				.select()
 				.from(users)
@@ -110,7 +76,16 @@ export const actions: Actions = {
 						eq(users.email, form.data.email as string)
 					)
 				);
-
+			if (existingUser?.githubId) {
+				return message(
+					form,
+					{
+						status: 'error',
+						text: 'This email and/or username are linked to a GitHub account. Please log in using GitHub.'
+					},
+					{ status: 403 }
+				);
+			}
 			if (existingUser?.email === form.data.email) {
 				return message(form, { status: 'error', text: 'Email already exists.' }, { status: 403 });
 			}
@@ -122,7 +97,38 @@ export const actions: Actions = {
 					{ status: 403 }
 				);
 			}
+			const userId = auth.generateUserId();
+			const passwordHash = await hash(form.data.password as string, {
+				memoryCost: 19456,
+				timeCost: 2,
+				outputLen: 32,
+				parallelism: 1
+			});
 
+			const file = form.data.image;
+			let imageUrl: string | null = null;
+			if (file) {
+				try {
+					const uniqueFileName = `${uuidv4()}-${file.name}`;
+					const blockBlobClient = containerClient.getBlockBlobClient(uniqueFileName);
+
+					const arrayBuffer = await file.arrayBuffer();
+					const content = new Uint8Array(arrayBuffer);
+
+					await blockBlobClient.upload(content, content.length, {
+						blobHTTPHeaders: { blobContentType: file.type }
+					});
+
+					imageUrl = blockBlobClient.url;
+				} catch (error) {
+					console.error('File upload error:', error);
+					return message(
+						form,
+						{ status: 'error', text: 'Failed to upload profile picture' },
+						{ status: 500 }
+					);
+				}
+			}
 			await db.insert(users).values({
 				id: userId,
 				name: form.data.name,

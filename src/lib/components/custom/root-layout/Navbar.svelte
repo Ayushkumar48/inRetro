@@ -9,7 +9,7 @@
 	class="flex items-center justify-between px-10 py-3 border-b border-gray-300 dark:border-gray-700"
 >
 	<h1 class="text-3xl font-semibold" style="font-family: 'Spline Sans Mono';">
-		<a href="/"> inRetro </a>
+		<a href="/" class="text-[#0BC7BE]"> inRetro </a>
 	</h1>
 	<div class="flex items-center gap-x-6">
 		{#if user.current}

@@ -8,21 +8,29 @@
 	import { Button } from '$lib/components/ui/button/index';
 	import { Textarea } from '$lib/components/ui/textarea/index';
 	import { cn } from '$lib/utils.js';
-	import { browser } from '$app/environment';
 	import { profileFormSchema, type ProfileSchema } from '$lib/client/schema';
-	import { page } from '$app/state';
+	import { user } from '$lib/stores/store.svelte';
+	import { toast } from 'svelte-sonner';
 
 	let { data }: { data: SuperValidated<Infer<ProfileSchema>> } = $props();
 
 	$effect(() => {
-		if (page.data?.user) {
-			$formData.email = page.data?.user?.email;
-			$formData.username = page.data?.user?.username;
+		if (user) {
+			$formData.email = user.current?.email || '';
+			$formData.username = user.current?.username || '';
+			$formData.bio = user.current?.bio || '';
 		}
 	});
 
 	const form = superForm(data, {
-		validators: zodClient(profileFormSchema)
+		validators: zodClient(profileFormSchema),
+		onUpdated: ({ form: f }) => {
+			if (f.valid) {
+				toast.success('Profile updated successfully!');
+			} else {
+				toast.error('Please resolve the errors.');
+			}
+		}
 	});
 
 	const { form: formData, enhance } = form;
@@ -45,12 +53,21 @@
 		<Form.Control>
 			{#snippet children({ props }: { props: Record<string, any> })}
 				<Form.Label>Username</Form.Label>
-				<Input placeholder="@inretro" {...props} bind:value={$formData.username} />
+				<Input
+					placeholder="@inretro"
+					{...props}
+					bind:value={$formData.username}
+					readonly={user.current?.githubId !== null}
+				/>
 			{/snippet}
 		</Form.Control>
 		<Form.Description>
-			This is your public display name. It can be your real name or a pseudonym. You can only change
-			this once every 30 days.
+			{#if user.current?.githubId}
+				User Details can't be changed if logged in using GitHub.
+			{:else}
+				This is your public display name. It can be your real name or a pseudonym. You can only
+				change this once every 30 days.
+			{/if}
 		</Form.Description>
 		<Form.FieldErrors />
 	</Form.Field>
@@ -61,7 +78,13 @@
 				<Input placeholder="example@inretro.com" value={$formData.email} readonly {...props} />
 			{/snippet}
 		</Form.Control>
-		<Form.Description>This is your email. You can't change email once created.</Form.Description>
+		<Form.Description>
+			{#if user.current?.githubId}
+				User Details can't be changed if logged in using GitHub.
+			{:else}
+				This is your email. You can't change email once created.
+			{/if}
+		</Form.Description>
 		<Form.FieldErrors />
 	</Form.Field>
 	<Form.Field {form} name="bio">
@@ -98,7 +121,3 @@
 
 	<Form.Button>Update profile</Form.Button>
 </form>
-
-{#if browser}
-	<SuperDebug data={$formData} />
-{/if}

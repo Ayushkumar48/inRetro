@@ -10,6 +10,13 @@ import { github } from '$lib/server/db/github.config';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { OAuth2Tokens } from 'arctic';
 
+type GitHubEmail = {
+	email: string;
+	primary: boolean;
+	verified: boolean;
+	visibility?: string;
+};
+
 export async function GET(event: RequestEvent): Promise<Response> {
 	const code = event.url.searchParams.get('code');
 	const state = event.url.searchParams.get('state');
@@ -41,7 +48,6 @@ export async function GET(event: RequestEvent): Promise<Response> {
 	});
 	const githubUser = await githubUserResponse.json();
 	const githubUserId = githubUser.id;
-	const githubUsername = githubUser.login;
 
 	const existingUser = await getUserFromGitHubId(githubUserId);
 
@@ -56,8 +62,29 @@ export async function GET(event: RequestEvent): Promise<Response> {
 			}
 		});
 	}
+	const emailResponse = await fetch('https://api.github.com/user/emails', {
+		headers: {
+			Authorization: `Bearer ${tokens.accessToken()}`
+		}
+	});
+	const emails: GitHubEmail[] = await emailResponse.json();
+	console.log(emails);
+	const primaryEmail: string | null =
+		emails.find((email: GitHubEmail) => email.primary && email.verified)?.email ?? null;
+	const fallbackEmail: string | null =
+		primaryEmail ?? emails.find((email: GitHubEmail) => email.verified)?.email ?? null;
+	const finalEmail: string =
+		fallbackEmail ?? `${githubUser.id}+${githubUser.login}@users.noreply.github.com`;
+	const userDetails = {
+		githubId: githubUser.id,
+		username: githubUser.login,
+		name: githubUser.name,
+		email: finalEmail,
+		avatarUrl: githubUser.avatar_url,
+		bio: githubUser.bio
+	};
 
-	const user = await createUser(githubUserId, githubUsername);
+	const user = await createUser(userDetails);
 
 	const sessionToken = generateSessionToken();
 	const session = await createSession(sessionToken, user.id);

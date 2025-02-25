@@ -14,15 +14,22 @@
 	import { Input } from '$lib/components/ui/input/index';
 	import { Button, buttonVariants } from '$lib/components/ui/button/index';
 	import { cn } from '$lib/utils.js';
-	import { browser } from '$app/environment';
 	import { accountFormSchema, type AccountSchema } from '$lib/client/schema';
 	import { Eye, EyeClosed } from 'lucide-svelte';
-	import { page } from '$app/state';
+	import { user } from '$lib/stores/store.svelte';
+	import { toast } from 'svelte-sonner';
 
 	let { data }: { data: SuperValidated<Infer<AccountSchema>> } = $props();
 
 	const form = superForm(data, {
-		validators: zodClient(accountFormSchema)
+		validators: zodClient(accountFormSchema),
+		onUpdated: ({ form: f }) => {
+			if (f.valid) {
+				toast.success('Profile updated successfully!');
+			} else {
+				toast.error('Please resolve the errors.');
+			}
+		}
 	});
 	const { form: formData, enhance, validate } = form;
 
@@ -35,8 +42,8 @@
 	);
 	let eyeOpen = $state<boolean>(true);
 	$effect(() => {
-		if (page.data?.user?.name) {
-			$formData.name = page.data?.user?.name;
+		if (user.current?.name) {
+			$formData.name = user.current?.name;
 		}
 	});
 </script>
@@ -46,9 +53,14 @@
 		<Form.Control>
 			{#snippet children({ props }: { props: Record<string, any> })}
 				<Form.Label>Full Name</Form.Label>
-				<Input {...props} bind:value={$formData.name} />
+				<Input {...props} bind:value={$formData.name} readonly={user.current?.githubId !== null} />
 			{/snippet}
 		</Form.Control>
+		<Form.Description>
+			{#if user.current?.githubId}
+				User Details can't be changed if logged in using GitHub.
+			{/if}
+		</Form.Description>
 		<Form.FieldErrors />
 	</Form.Field>
 	<Form.Field {form} name="dob" class="flex flex-col">
@@ -101,7 +113,12 @@
 			{#snippet children({ props }: { props: Record<string, any> })}
 				<Form.Label>Account Password</Form.Label>
 				<div class="relative">
-					<Input bind:value={$formData.password} type={eyeOpen ? 'password' : 'text'} {...props} />
+					<Input
+						bind:value={$formData.password}
+						disabled={user.current?.githubId !== null}
+						type={eyeOpen ? 'password' : 'text'}
+						{...props}
+					/>
 					<Button
 						variant="ghost"
 						class="absolute top-1/2 right-0 -translate-y-1/2"
@@ -121,7 +138,3 @@
 	</Form.Field>
 	<Form.Button>Update account</Form.Button>
 </form>
-
-{#if browser}
-	<SuperDebug data={$formData} />
-{/if}

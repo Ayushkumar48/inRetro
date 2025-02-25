@@ -20,7 +20,7 @@
 			{#if user.current?.image}
 				<img src={user.current?.image} alt="user" />
 			{:else}
-				<img src="/avatars/girl.png" alt="user" />
+				<img src="/avatars/boy.png" alt="user" />
 			{/if}
 		</Avatar.Root>
 	</DropdownMenu.Trigger>
@@ -35,19 +35,15 @@
 		</DropdownMenu.Label>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Group>
-			<DropdownMenu.Item>
+			<DropdownMenu.Item onclick={() => goto('/profile')}>
 				Profile
 				<DropdownMenu.Shortcut>⇧⌘P</DropdownMenu.Shortcut>
 			</DropdownMenu.Item>
-			<DropdownMenu.Item>
-				Billing
-				<DropdownMenu.Shortcut>⌘B</DropdownMenu.Shortcut>
-			</DropdownMenu.Item>
-			<DropdownMenu.Item>
-				Settings
+
+			<DropdownMenu.Item onclick={() => goto('/profile/account')}>
+				Account
 				<DropdownMenu.Shortcut>⌘S</DropdownMenu.Shortcut>
 			</DropdownMenu.Item>
-			<DropdownMenu.Item>New Team</DropdownMenu.Item>
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Item onclick={handleLogout}>

@@ -5,7 +5,8 @@ import { github } from '$lib/server/db/github.config';
 
 export async function GET(event: RequestEvent): Promise<Response> {
 	const state = generateState();
-	const url = github.createAuthorizationURL(state, []);
+	const scopes = ['user:email'];
+	const url = github.createAuthorizationURL(state, scopes);
 
 	event.cookies.set('github_oauth_state', state, {
 		path: '/',

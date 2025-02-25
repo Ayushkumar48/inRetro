@@ -37,7 +37,7 @@
 				<Form.Control>
 					{#snippet children({ props }: { props: Record<string, any> })}
 						<Form.Label>Full Name</Form.Label>
-						<Input {...props} bind:value={$formData.name} />
+						<Input {...props} bind:value={$formData.name} placeholder="John Doe" />
 					{/snippet}
 				</Form.Control>
 				<Form.FieldErrors />
@@ -46,7 +46,7 @@
 				<Form.Control>
 					{#snippet children({ props }: { props: Record<string, any> })}
 						<Form.Label>Username</Form.Label>
-						<Input {...props} bind:value={$formData.username} />
+						<Input {...props} bind:value={$formData.username} placeholder="johndoe" />
 					{/snippet}
 				</Form.Control>
 				<Form.FieldErrors />
@@ -55,7 +55,12 @@
 				<Form.Control>
 					{#snippet children({ props }: { props: Record<string, any> })}
 						<Form.Label>Email</Form.Label>
-						<Input {...props} type="email" bind:value={$formData.email} />
+						<Input
+							{...props}
+							type="email"
+							bind:value={$formData.email}
+							placeholder="john@example.com"
+						/>
 					{/snippet}
 				</Form.Control>
 				<Form.FieldErrors />
@@ -64,7 +69,12 @@
 				<Form.Control>
 					{#snippet children({ props }: { props: Record<string, any> })}
 						<Form.Label>Password</Form.Label>
-						<Input {...props} type="password" bind:value={$formData.password} />
+						<Input
+							{...props}
+							type="password"
+							bind:value={$formData.password}
+							placeholder="••••••••••"
+						/>
 					{/snippet}
 				</Form.Control>
 				<Form.FieldErrors />
