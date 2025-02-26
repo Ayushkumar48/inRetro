@@ -107,7 +107,7 @@
 						in:fly={{ x: -30, duration: 500, delay: 300, easing: cubicInOut }}
 						out:fly={{ x: 30, duration: 300, easing: quintIn }}
 					>
-						<Login bind:form />
+						<Login />
 					</div>
 				{:else}
 					<div

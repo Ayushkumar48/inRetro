@@ -2,10 +2,10 @@ import {
 	setSessionTokenCookie,
 	generateSessionToken,
 	createSession,
-	getUserFromGitHubId,
-	createUser
+	createUser,
+	getUserFromAuthProviderId
 } from '$lib/server/auth';
-import { github } from '$lib/server/db/github.config';
+import { github } from '$lib/server/db';
 
 import type { RequestEvent } from '@sveltejs/kit';
 import type { OAuth2Tokens } from 'arctic';
@@ -47,9 +47,9 @@ export async function GET(event: RequestEvent): Promise<Response> {
 		}
 	});
 	const githubUser = await githubUserResponse.json();
-	const githubUserId = githubUser.id;
+	const githubUserId: number = githubUser.id;
 
-	const existingUser = await getUserFromGitHubId(githubUserId);
+	const existingUser = await getUserFromAuthProviderId(githubUserId, 'github');
 
 	if (existingUser) {
 		const sessionToken = generateSessionToken();
@@ -68,7 +68,6 @@ export async function GET(event: RequestEvent): Promise<Response> {
 		}
 	});
 	const emails: GitHubEmail[] = await emailResponse.json();
-	console.log(emails);
 	const primaryEmail: string | null =
 		emails.find((email: GitHubEmail) => email.primary && email.verified)?.email ?? null;
 	const fallbackEmail: string | null =
@@ -84,7 +83,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
 		bio: githubUser.bio
 	};
 
-	const user = await createUser(userDetails);
+	const user = await createUser(userDetails, 'github');
 
 	const sessionToken = generateSessionToken();
 	const session = await createSession(sessionToken, user.id);

@@ -3,32 +3,35 @@
 	import { Button } from '$lib/components/ui/button/index';
 	import { Input } from '$lib/components/ui/input/index';
 	import { cn } from '$lib/utils.js';
-	import { enhance } from '$app/forms';
+	import { enhance, applyAction } from '$app/forms';
 	import Label from '$lib/components/ui/label/label.svelte';
-	import type { ActionData } from '../../../../routes/(auth)/login/$types';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 
-	let { form = $bindable() }: { form: ActionData } = $props();
 	let className = $state<string | undefined | null>(undefined);
 	export { className as class };
-	$effect(() => {
-		if (form?.status === 200) {
-			toast.success(form?.message);
-			setTimeout(() => {
-				goto('/game');
-			}, 10000);
-		}
-		if (form?.status === 400 || form?.status === 500) {
-			toast.error(form?.message);
-		}
-	});
 
 	let isLoading = $state<boolean>(false);
+
+	const useEnhanced = () => {
+		isLoading = true;
+		toast.loading('Signing you in!');
+		// @ts-expect-error
+		return async ({ result }) => {
+			isLoading = false;
+			if (result.type === 'success' && result.data?.status === 200) {
+				toast.success(result.data.message);
+				goto('/game');
+			} else {
+				toast.error(result.data?.message || 'An error occurred');
+				await applyAction(result);
+			}
+		};
+	};
 </script>
 
 <div class={cn('grid gap-6', className)}>
-	<form method="POST" use:enhance action="?/login">
+	<form method="POST" use:enhance={useEnhanced} action="?/login">
 		<div class="grid gap-2">
 			<div>
 				<Label>Username</Label>
@@ -54,17 +57,34 @@
 			<span class="bg-background text-muted-foreground px-2"> Or continue with </span>
 		</div>
 	</div>
-	<Button
-		variant="outline"
-		type="button"
-		disabled={isLoading}
-		onclick={() => goto('/login/github')}
-	>
-		{#if isLoading}
-			<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
-		{:else}
-			<Icons.gitHub class="mr-2 h-4 w-4" />
-		{/if}
-		GitHub
-	</Button>
+	<div class="flex gap-x-4">
+		<Button
+			variant="outline"
+			type="button"
+			disabled={isLoading}
+			onclick={() => goto('/login/google')}
+			class="w-1/2"
+		>
+			{#if isLoading}
+				<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
+			{:else}
+				<Icons.google class="mr-2 h-4 w-4" />
+			{/if}
+			Google
+		</Button>
+		<Button
+			variant="outline"
+			type="button"
+			disabled={isLoading}
+			onclick={() => goto('/login/github')}
+			class="w-1/2"
+		>
+			{#if isLoading}
+				<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
+			{:else}
+				<Icons.gitHub class="mr-2 h-4 w-4" />
+			{/if}
+			GitHub
+		</Button>
+	</div>
 </div>

@@ -53,11 +53,15 @@
 		<Form.Control>
 			{#snippet children({ props }: { props: Record<string, any> })}
 				<Form.Label>Full Name</Form.Label>
-				<Input {...props} bind:value={$formData.name} readonly={user.current?.githubId !== null} />
+				<Input
+					{...props}
+					bind:value={$formData.name}
+					readonly={user.current?.githubId !== null || user.current?.googleId !== null}
+				/>
 			{/snippet}
 		</Form.Control>
 		<Form.Description>
-			{#if user.current?.githubId}
+			{#if user.current?.githubId || user.current?.googleId}
 				User Details can't be changed if logged in using GitHub.
 			{/if}
 		</Form.Description>
@@ -115,7 +119,7 @@
 				<div class="relative">
 					<Input
 						bind:value={$formData.password}
-						disabled={user.current?.githubId !== null}
+						disabled={user.current?.githubId !== null || user.current?.googleId !== null}
 						type={eyeOpen ? 'password' : 'text'}
 						{...props}
 					/>

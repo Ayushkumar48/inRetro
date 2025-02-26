@@ -57,13 +57,13 @@
 					placeholder="@inretro"
 					{...props}
 					bind:value={$formData.username}
-					readonly={user.current?.githubId !== null}
+					readonly={user.current?.githubId !== null || user.current?.googleId !== null}
 				/>
 			{/snippet}
 		</Form.Control>
 		<Form.Description>
-			{#if user.current?.githubId}
-				User Details can't be changed if logged in using GitHub.
+			{#if user.current?.githubId || user.current?.googleId}
+				User Details can't be changed if logged in using GitHub or Google.
 			{:else}
 				This is your public display name. It can be your real name or a pseudonym. You can only
 				change this once every 30 days.
@@ -79,8 +79,8 @@
 			{/snippet}
 		</Form.Control>
 		<Form.Description>
-			{#if user.current?.githubId}
-				User Details can't be changed if logged in using GitHub.
+			{#if user.current?.githubId || user.current?.googleId}
+				User Details can't be changed if logged in using GitHub or Google.
 			{:else}
 				This is your email. You can't change email once created.
 			{/if}

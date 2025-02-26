@@ -14,6 +14,14 @@ type GitHubUser = {
 	avatarUrl: string;
 	bio: string;
 };
+type GoogleUser = {
+	googleId: string;
+	username: string;
+	name: string;
+	email: string;
+	avatarUrl: string;
+	bio: string;
+};
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -96,28 +104,44 @@ export function generateUserId() {
 	return id;
 }
 
-export async function getUserFromGitHubId(githubUserId: number) {
-	const [existingUser] = await db
-		.select()
-		.from(table.users)
-		.where(eq(table.users.githubId, githubUserId));
+export async function getUserFromAuthProviderId(
+	authProviderUserId: number | string,
+	type: 'github' | 'google'
+) {
+	const column = type === 'github' ? table.users.githubId : table.users.googleId;
+
+	const [existingUser] = await db.select().from(table.users).where(eq(column, authProviderUserId));
+
 	return existingUser;
 }
 
-export async function createUser(userDetails: GitHubUser) {
+export async function createUser(userDetails: GitHubUser | GoogleUser, type: 'google' | 'github') {
 	const userId = generateUserId();
-	await db
-		.insert(table.users)
-		.values({
-			id: userId,
-			githubId: userDetails.githubId,
-			username: userDetails.username,
-			name: userDetails.name,
-			email: userDetails.email,
-			image: userDetails.avatarUrl,
-			bio: userDetails.bio
-		})
-		.returning();
+
+	const userRecord: {
+		id: string;
+		username: string;
+		name: string;
+		email: string;
+		image: string;
+		bio: string;
+		githubId?: number;
+		googleId?: string;
+	} = {
+		id: userId,
+		username: userDetails.username,
+		name: userDetails.name,
+		email: userDetails.email,
+		image: userDetails.avatarUrl,
+		bio: userDetails.bio
+	};
+	if (type === 'github') {
+		userRecord.githubId = (userDetails as GitHubUser).githubId;
+	} else if (type === 'google') {
+		userRecord.googleId = (userDetails as GoogleUser).googleId;
+	}
+	await db.insert(table.users).values(userRecord);
+
 	const [user] = await db.select().from(table.users).where(eq(table.users.id, userId));
 	return user;
 }

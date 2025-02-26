@@ -1,5 +1,4 @@
-import { db } from '$lib/server/db';
-import { redis } from '$lib/server/db/redis';
+import { db, redis } from '$lib/server/db';
 import { allLevels } from '$lib/server/db/schema';
 import { localLevels } from '$lib/stores/store.svelte';
 

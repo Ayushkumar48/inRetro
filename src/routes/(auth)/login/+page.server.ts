@@ -5,11 +5,10 @@ import type { PageServerLoad } from './$types';
 import { message, superValidate, fail } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { userSchema } from '$lib/client/schema';
-import { db } from '$lib/server/db';
+import { containerClient, db } from '$lib/server/db';
 import { eq, or } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { users } from '$lib/server/db/schema';
-import containerClient from '$lib/server/db/azure.config';
 
 export const load: PageServerLoad = async () => {
 	return {

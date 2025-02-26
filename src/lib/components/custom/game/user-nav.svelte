@@ -18,7 +18,7 @@
 	<DropdownMenu.Trigger class="flex items-center relative h-8 w-8 rounded-full">
 		<Avatar.Root class="h-8 w-8 select-none">
 			{#if user.current?.image}
-				<img src={user.current?.image} alt="user" />
+				<img src={user.current?.image} alt="user" referrerpolicy="no-referrer" />
 			{:else}
 				<img src="/avatars/boy.png" alt="user" />
 			{/if}

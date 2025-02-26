@@ -3,6 +3,7 @@ import { pgTable, text, timestamp, serial, json, jsonb, date, integer } from 'dr
 export const users = pgTable('users', {
 	id: text('id').primaryKey(),
 	githubId: integer('github_id'),
+	googleId: text('google_id'),
 	name: text('name'),
 	email: text('email'),
 	username: text('username'),

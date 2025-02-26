@@ -2,7 +2,8 @@
 	import SidebarNav from '$lib/components/custom/profile/sidebar-nav.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
-	let { children } = $props();
+	import { user } from '$lib/stores/store.svelte';
+	let { children, data } = $props();
 	const sidebarNavItems = [
 		{
 			title: 'Profile',
@@ -13,6 +14,9 @@
 			href: '/profile/account'
 		}
 	];
+	$effect(() => {
+		user.current = data.user;
+	});
 </script>
 
 <div class="hidden space-y-6 p-10 pb-16 md:block">

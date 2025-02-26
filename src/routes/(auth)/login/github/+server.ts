@@ -1,7 +1,7 @@
 import { generateState } from 'arctic';
 
 import type { RequestEvent } from '@sveltejs/kit';
-import { github } from '$lib/server/db/github.config';
+import { github } from '$lib/server/db';
 
 export async function GET(event: RequestEvent): Promise<Response> {
 	const state = generateState();
