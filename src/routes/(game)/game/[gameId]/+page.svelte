@@ -3,7 +3,6 @@
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import { cn } from '$lib/utils';
 	import sdk, { type ProjectFiles, type VM } from '@stackblitz/sdk';
-	import axios from 'axios';
 	import { LoaderCircle, Save } from 'lucide-svelte';
 	import { mode } from 'mode-watcher';
 	import { onMount } from 'svelte';

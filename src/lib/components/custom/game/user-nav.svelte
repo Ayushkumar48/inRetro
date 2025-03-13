@@ -4,6 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 	import { user } from '$lib/stores/store.svelte';
+	import { LogOut } from 'lucide-svelte';
 	async function handleLogout() {
 		const res = await fetch('/api/logout');
 		if (res.ok) {
@@ -47,7 +48,7 @@
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Item onclick={handleLogout}>
-			Log out
+			<LogOut /> Log out
 			<DropdownMenu.Shortcut>⇧⌘Q</DropdownMenu.Shortcut>
 		</DropdownMenu.Item>
 	</DropdownMenu.Content>

@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { originalLevels, searchLevels } from '$lib/stores/store.svelte';
+	import { Debounced, watch } from 'runed';
 	import { onMount } from 'svelte';
 	let focused = $state(false);
 	let searchValue = $state('');
-
+	const debouncedSearchValue = new Debounced(() => searchValue, 500);
 	function handleKeydown(event: KeyboardEvent) {
 		if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
 			event.preventDefault();
@@ -32,6 +34,21 @@
 	function handleBlur() {
 		focused = false;
 	}
+
+	watch(
+		() => debouncedSearchValue.current,
+		() => {
+			const inputValue = debouncedSearchValue.current.toLowerCase();
+			if (!inputValue || inputValue === '') {
+				searchLevels.current = [...originalLevels.current];
+				return;
+			}
+
+			searchLevels.current = originalLevels.current.filter((item) =>
+				item.searchQuery.includes(inputValue)
+			);
+		}
+	);
 </script>
 
 <div class="relative w-full max-w-md">
@@ -41,8 +58,7 @@
 			type="search"
 			placeholder="Search..."
 			class="w-full h-9 pl-10 pr-4 rounded-md border border-input bg-background py-2 text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-			value={searchValue}
-			oninput={(e) => (searchValue = e.currentTarget.value)}
+			bind:value={searchValue}
 			onfocus={handleFocus}
 			onblur={handleBlur}
 		/>
