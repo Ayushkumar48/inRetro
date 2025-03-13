@@ -42,6 +42,8 @@
 				><ChartNoAxesCombined /> Analytics</Button
 			>
 		{/if}
-		<Button onclick={() => goto(`/game/${level.id}`)} class="w-1/2 z-10"><Code /> Code</Button>
+		<Button onclick={() => (window.location.href = `/game/${level.id}`)} class="w-1/2 z-10"
+			><Code /> Code</Button
+		>
 	</Card.Footer>
 </Card.Root>
