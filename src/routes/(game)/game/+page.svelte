@@ -24,7 +24,7 @@
 	class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-8 gap-x-4 md:px-6 px-4 lg:px-8 pb-10 self-center"
 >
 	{#if searchLevels.current}
-		{#each searchLevels.current as level}
+		{#each searchLevels.current as level (level.id)}
 			<Level {level} />
 		{/each}
 	{/if}

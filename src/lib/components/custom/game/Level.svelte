@@ -39,7 +39,7 @@
 					)}
 				</div>
 			</div>
-			<Card.Title class="text-xl text-wrap duration-300 ease-in-out"
+			<Card.Title class="text-xl text-wrap duration-300 ease-in-out group-hover:text-white"
 				>{level.levelDetails.language}</Card.Title
 			>
 		</div>
