@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { type Level } from '$lib/server/db/schema';
 	import axios from 'axios';
 
@@ -8,7 +8,7 @@
 			path: 'Front-End Development',
 			language: 'HTML',
 			details: '',
-			isCompleted: false
+			isAttempted: false
 		},
 		files: {},
 		template: 'node',
@@ -25,4 +25,4 @@
 	<input type="text" placeholder="langauge" bind:value={data.levelDetails.language} />
 	<input type="text" placeholder="details" bind:value={data.levelDetails.details} />
 	<button onclick={saveCode}>Save</button>
-</div>
+</div> -->

@@ -37,7 +37,7 @@ export type LevelDetails = {
 	details: string;
 	isCompleted: boolean;
 	isAttempted: boolean;
-	color: string;
+	type: string;
 };
 export type Level = typeof allLevels.$inferSelect;
 

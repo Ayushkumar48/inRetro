@@ -6,7 +6,10 @@ import { eq } from 'drizzle-orm';
 export async function POST({ request }) {
 	try {
 		const data = await request.json();
-		await db.insert(allLevels).values(data);
+		await db
+			.update(allLevels)
+			.set({ files: data.files })
+			.where(eq(allLevels.id, Number(data.id.gameId)));
 		return json({ success: true });
 	} catch (error) {
 		console.error('Error parsing request:', error);

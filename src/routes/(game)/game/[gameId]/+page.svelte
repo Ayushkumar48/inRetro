@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import { cn } from '$lib/utils';
 	import sdk, { type ProjectFiles, type VM } from '@stackblitz/sdk';
+	import axios from 'axios';
 	import { BadgeInfo, LoaderCircle, Save } from 'lucide-svelte';
 	import { mode } from 'mode-watcher';
 	import { onMount } from 'svelte';
@@ -42,6 +44,7 @@
 	async function saveCode() {
 		if (editorVM) {
 			const files = await editorVM.getFsSnapshot();
+			const res = await axios.post('/api/savecode', { files, id: page.params });
 		}
 	}
 	let instructions = [
@@ -95,9 +98,13 @@
 					<div class="space-y-2 mt-4">
 						{#each instructions as step, index}
 							<div class="pb-4">
-								<h3 class="text-lg font-semibold mb-2">Step {index + 1}: {step.title}</h3>
-								<p class="text-gray-700">{step.instruction}</p>
-								<Separator class="mt-0.5" />
+								<h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
+									Step {index + 1}: {step.title}
+								</h3>
+								<p class="text-gray-700 dark:text-gray-300">
+									{step.instruction}
+								</p>
+								<Separator class="mt-0.5 bg-gray-300 dark:bg-gray-600" />
 							</div>
 						{/each}
 					</div>

@@ -61,9 +61,13 @@
 						<div class="space-y-2 mt-4">
 							{#each instructions as step, index}
 								<div class="pb-4">
-									<h3 class="text-lg font-semibold mb-2">Step {index + 1}: {step.title}</h3>
-									<p class="text-gray-700">{step.instruction}</p>
-									<Separator class="mt-0.5" />
+									<h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
+										Step {index + 1}: {step.title}
+									</h3>
+									<p class="text-gray-700 dark:text-gray-300">
+										{step.instruction}
+									</p>
+									<Separator class="mt-0.5 bg-gray-300 dark:bg-gray-600" />
 								</div>
 							{/each}
 						</div>
