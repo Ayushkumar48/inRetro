@@ -1,6 +1,6 @@
 <script lang="ts">
 	import CalendarIcon from 'svelte-radix/Calendar.svelte';
-	import SuperDebug, { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
+	import { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import {
 		DateFormatter,
@@ -15,9 +15,10 @@
 	import { Button, buttonVariants } from '$lib/components/ui/button/index';
 	import { cn } from '$lib/utils.js';
 	import { accountFormSchema, type AccountSchema } from '$lib/client/schema';
-	import { Eye, EyeClosed } from 'lucide-svelte';
+	import { BadgeInfo, Eye, EyeClosed } from 'lucide-svelte';
 	import { user } from '$lib/stores/store.svelte';
 	import { toast } from 'svelte-sonner';
+	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 
 	let { data }: { data: SuperValidated<Infer<AccountSchema>> } = $props();
 
@@ -115,7 +116,19 @@
 	<Form.Field name="password" {form}>
 		<Form.Control>
 			{#snippet children({ props }: { props: Record<string, any> })}
-				<Form.Label>Account Password</Form.Label>
+				<Form.Label class="flex gap-x-2 items-center"
+					>Account Password
+					<Tooltip.Provider>
+						<Tooltip.Root delayDuration={100}>
+							<Tooltip.Trigger><BadgeInfo class="w-5 h-5" /></Tooltip.Trigger>
+							<Tooltip.Content class="w-80 text-wrap">
+								<p>
+									Password can only be changed if account is not logged in through google or github.
+								</p>
+							</Tooltip.Content>
+						</Tooltip.Root>
+					</Tooltip.Provider>
+				</Form.Label>
 				<div class="relative">
 					<Input
 						bind:value={$formData.password}
