@@ -5,6 +5,7 @@
 	import axios from 'axios';
 	import { mode } from 'mode-watcher';
 	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 	let { data } = $props();
 
 	type TemplateType =
@@ -40,6 +41,22 @@
 		if (editorVM) {
 			const files = await editorVM.getFsSnapshot();
 			console.log(files);
+			toast.promise(
+				new Promise((resolve, reject) =>
+					setTimeout(() => {
+						if (Math.random() > 0.5) {
+							resolve({ name: 'Svelte Sonner' });
+						} else {
+							reject();
+						}
+					}, 10000)
+				),
+				{
+					loading: 'Saving the code',
+					success: 'Code saved!',
+					error: 'Error while saving code'
+				}
+			);
 			// const res = await axios.post('/api/savecode', { files, id: page.params });
 		}
 	}

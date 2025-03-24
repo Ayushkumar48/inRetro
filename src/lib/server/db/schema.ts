@@ -1,4 +1,14 @@
-import { pgTable, text, timestamp, serial, json, jsonb, date, integer } from 'drizzle-orm/pg-core';
+import {
+	pgTable,
+	text,
+	timestamp,
+	serial,
+	json,
+	jsonb,
+	date,
+	integer,
+	uuid
+} from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
 	id: text('id').primaryKey(),
@@ -39,6 +49,18 @@ export type LevelDetails = {
 	isAttempted: boolean;
 	type: string;
 };
+
+export const userLevels = pgTable('user_levels', {
+	id: uuid().defaultRandom().primaryKey(),
+	levelId: integer('level_id')
+		.references(() => allLevels.id, { onDelete: 'cascade' })
+		.notNull(),
+	levelDetails: jsonb('level_details').$type<LevelDetails & { isBookmarked: boolean }>().notNull(),
+	files: json('files').notNull(),
+	template: text('template'),
+	startScript: text('start_script')
+});
+
 export type Level = typeof allLevels.$inferSelect;
 
 export type Session = typeof session.$inferSelect;

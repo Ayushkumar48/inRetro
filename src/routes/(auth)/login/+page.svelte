@@ -7,7 +7,7 @@
 	import type { ActionData, PageData } from './$types';
 	import { onMount } from 'svelte';
 
-	let { data, form }: { data: PageData; form: ActionData } = $props();
+	let { data }: { data: PageData } = $props();
 	let login = $state<boolean>(true);
 	let transitioning = $state<boolean>(false);
 	let containerHeight = $state<number>(0);

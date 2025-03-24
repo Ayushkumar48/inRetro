@@ -32,24 +32,15 @@
 			pathname.includes('completed') ? '' : 'text-muted-foreground'
 		)}
 	>
-		Completed
+		Favorites
 	</button>
 	<button
-		onclick={() => goto('/game/continue')}
+		onclick={() => goto('/game/favorites')}
 		class={cn(
 			'hover:text-primary text-sm font-medium transition-colors',
 			pathname.includes('continue') ? '' : 'text-muted-foreground'
 		)}
 	>
 		Continue
-	</button>
-	<button
-		onclick={() => goto('/game/progress')}
-		class={cn(
-			'hover:text-primary text-sm font-medium transition-colors',
-			pathname.includes('progress') ? '' : 'text-muted-foreground'
-		)}
-	>
-		Progress
 	</button>
 </nav>
