@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Navbar from '$lib/components/custom/game/Navbar.svelte';
 	import { type Snippet } from 'svelte';
-	import type { PageData } from './$types';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { buttonVariants } from '$lib/components/ui/button';
 	import { BadgeInfo } from '@lucide/svelte';

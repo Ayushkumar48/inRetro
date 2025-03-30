@@ -26,7 +26,7 @@
 	>
 
 	<button
-		onclick={() => goto('/game/completed')}
+		onclick={() => goto('/game/favorite')}
 		class={cn(
 			'hover:text-primary text-sm font-medium transition-colors',
 			pathname.includes('completed') ? '' : 'text-muted-foreground'
@@ -35,7 +35,7 @@
 		Favorites
 	</button>
 	<button
-		onclick={() => goto('/game/favorites')}
+		onclick={() => goto('/game/continue')}
 		class={cn(
 			'hover:text-primary text-sm font-medium transition-colors',
 			pathname.includes('continue') ? '' : 'text-muted-foreground'
