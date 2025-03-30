@@ -1,6 +1,6 @@
 <script>
 	import { Button } from '$lib/components/ui/button/index';
-	import { Terminal, AlignJustify } from '@lucide/svelte';
+	import { AlignJustify } from '@lucide/svelte';
 	import { siGithub } from 'simple-icons';
 	import { page } from '$app/state';
 	import UserNav from '$lib/components/custom/game/user-nav.svelte';

@@ -7,7 +7,6 @@
 	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { Terminal } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
 	let login = $state<boolean>(page.url.searchParams.get('type') !== 'signup');
@@ -37,7 +36,7 @@
 	class="container relative hidden h-full flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0"
 >
 	<a href="/" class="flex items-center gap-2 absolute left-8 top-8 z-50">
-		<Terminal class="h-8 w-8 text-primary" />
+		<img src="/logo.svg" alt="inRetro" />
 		<h1 class="font-bold text-2xl text-primary-foreground" style="font-family: 'Spline Sans Mono';">
 			inRetro
 		</h1>
