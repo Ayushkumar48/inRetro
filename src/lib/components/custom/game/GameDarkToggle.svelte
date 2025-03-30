@@ -5,7 +5,6 @@
 	import { toggleMode } from 'mode-watcher';
 	import { page } from '$app/state';
 	const currentPath = Number(page.url.pathname.split('/').pop());
-	console.log(isNaN(currentPath));
 </script>
 
 {#if !isNaN(currentPath)}
