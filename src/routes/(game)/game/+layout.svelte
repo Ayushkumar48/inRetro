@@ -2,18 +2,14 @@
 	import Navbar from '$lib/components/custom/game/Navbar.svelte';
 	import { type Snippet } from 'svelte';
 	import type { PageData } from './$types';
-	let { children, data }: { children: Snippet; data: PageData } = $props();
-	import { user } from '$lib/stores/store.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { buttonVariants } from '$lib/components/ui/button';
-	import { BadgeInfo } from 'lucide-svelte';
+	import { BadgeInfo } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
-	$effect(() => {
-		user.current = data.user;
-	});
 
 	const currentPath = $state(page.url?.pathname?.split('/')?.pop());
+	let { children }: { children: Snippet } = $props();
 	let instructions = [
 		{
 			title: 'Open ReadMe.md',
@@ -78,3 +74,7 @@
 	</div>
 {/if}
 {@render children()}
+
+<svelte:head>
+	<title>Game | inRetro</title>
+</svelte:head>

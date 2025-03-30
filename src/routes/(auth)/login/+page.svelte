@@ -4,11 +4,13 @@
 	import { Button } from '$lib/components/ui/button/index';
 	import { fade, fly, slide } from 'svelte/transition';
 	import { cubicInOut, quintIn } from 'svelte/easing';
-	import type { ActionData, PageData } from './$types';
+	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
+	import { Terminal } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
-	let login = $state<boolean>(true);
+	let login = $state<boolean>(page.url.searchParams.get('type') !== 'signup');
 	let transitioning = $state<boolean>(false);
 	let containerHeight = $state<number>(0);
 	let loginRef = $state<HTMLElement>();
@@ -34,6 +36,12 @@
 <div
 	class="container relative hidden h-full flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0"
 >
+	<a href="/" class="flex items-center gap-2 absolute left-8 top-8 z-50">
+		<Terminal class="h-8 w-8 text-primary" />
+		<h1 class="font-bold text-2xl text-primary-foreground" style="font-family: 'Spline Sans Mono';">
+			inRetro
+		</h1>
+	</a>
 	<Button
 		onclick={toggleForm}
 		variant="ghost"

@@ -15,8 +15,8 @@
 	import { Button, buttonVariants } from '$lib/components/ui/button/index';
 	import { cn } from '$lib/utils.js';
 	import { accountFormSchema, type AccountSchema } from '$lib/client/schema';
-	import { BadgeInfo, Eye, EyeClosed } from 'lucide-svelte';
-	import { user } from '$lib/stores/store.svelte';
+	import { BadgeInfo, Eye, EyeClosed } from '@lucide/svelte';
+	import { page } from '$app/state';
 	import { toast } from 'svelte-sonner';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 
@@ -43,8 +43,8 @@
 	);
 	let eyeOpen = $state<boolean>(true);
 	$effect(() => {
-		if (user.current?.name) {
-			$formData.name = user.current?.name;
+		if (page.data.user?.name) {
+			$formData.name = page.data.user?.name;
 		}
 	});
 </script>
@@ -57,12 +57,12 @@
 				<Input
 					{...props}
 					bind:value={$formData.name}
-					readonly={user.current?.githubId !== null || user.current?.googleId !== null}
+					readonly={page.data.user?.githubId !== null || page.data.user?.googleId !== null}
 				/>
 			{/snippet}
 		</Form.Control>
 		<Form.Description>
-			{#if user.current?.githubId || user.current?.googleId}
+			{#if page.data.user?.githubId || page.data.user?.googleId}
 				User Details can't be changed if logged in using GitHub.
 			{/if}
 		</Form.Description>
@@ -123,7 +123,7 @@
 							<Tooltip.Trigger><BadgeInfo class="w-5 h-5" /></Tooltip.Trigger>
 							<Tooltip.Content class="w-80 text-wrap">
 								<p>
-									Password can only be changed if account is not logged in through google or github.
+									Password can only be changed if account is not logged in through Google or GitHub.
 								</p>
 							</Tooltip.Content>
 						</Tooltip.Root>
@@ -132,7 +132,7 @@
 				<div class="relative">
 					<Input
 						bind:value={$formData.password}
-						disabled={user.current?.githubId !== null || user.current?.googleId !== null}
+						disabled={page.data.user?.githubId !== null || page.data.user?.googleId !== null}
 						type={eyeOpen ? 'password' : 'text'}
 						{...props}
 					/>

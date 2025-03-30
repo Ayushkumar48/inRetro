@@ -7,6 +7,7 @@
 	import Label from '$lib/components/ui/label/label.svelte';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
+	import { siGithub, siGoogle } from 'simple-icons';
 
 	let className = $state<string | undefined | null>(undefined);
 	export { className as class };
@@ -68,9 +69,13 @@
 			{#if isLoading}
 				<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
 			{:else}
-				<Icons.google class="mr-2 h-4 w-4" />
+				<div class="flex items-center justify-center gap-x-3">
+					<span class="h-5 w-5 flex items-center justify-center fill-black dark:fill-white">
+						{@html siGoogle.svg}
+					</span>
+					Google
+				</div>
 			{/if}
-			Google
 		</Button>
 		<Button
 			variant="outline"
@@ -82,9 +87,13 @@
 			{#if isLoading}
 				<Icons.spinner class="mr-2 h-4 w-4 animate-spin" />
 			{:else}
-				<Icons.gitHub class="mr-2 h-4 w-4" />
+				<div class="flex items-center justify-center gap-x-3">
+					<span class="h-5 w-5 flex items-center justify-center fill-black dark:fill-white">
+						{@html siGithub.svg}
+					</span>
+					GitHub
+				</div>
 			{/if}
-			GitHub
 		</Button>
 	</div>
 </div>

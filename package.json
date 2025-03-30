@@ -32,7 +32,6 @@
 		"eslint-plugin-svelte": "^2.46.1",
 		"formsnap": "^2.0.0",
 		"globals": "^15.14.0",
-		"lucide-svelte": "^0.475.0",
 		"mode-watcher": "^0.5.1",
 		"postcss": "^8.5.3",
 		"prettier": "^3.4.2",
@@ -53,6 +52,7 @@
 	"dependencies": {
 		"@azure/storage-blob": "^12.26.0",
 		"@internationalized/date": "^3.7.0",
+		"@lucide/svelte": "^0.484.0",
 		"@node-rs/argon2": "^2.0.2",
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",

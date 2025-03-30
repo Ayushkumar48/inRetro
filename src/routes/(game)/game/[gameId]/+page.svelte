@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Sidebar from '$lib/components/custom/game/Sidebar/Sidebar.svelte';
-	import { page } from '$app/state';
 	import sdk, { type ProjectFiles, type VM } from '@stackblitz/sdk';
 	import axios from 'axios';
 	import { mode } from 'mode-watcher';
@@ -40,24 +39,48 @@
 	async function saveCode() {
 		if (editorVM) {
 			const files = await editorVM.getFsSnapshot();
-			console.log(files);
-			toast.promise(
-				new Promise((resolve, reject) =>
-					setTimeout(() => {
-						if (Math.random() > 0.5) {
-							resolve({ name: 'Svelte Sonner' });
-						} else {
-							reject();
-						}
-					}, 10000)
-				),
-				{
+			if (data.game.levelDetails.status === 'Not Attempted') {
+				const res = new Promise((resolve, reject) => {
+					try {
+						axios
+							.post('/api/savecode', {
+								levelId: data.game.id,
+								levelDetails: { ...data.game.levelDetails, status: 'Attempted' },
+								files,
+								template: data.game.template,
+								startScript: data.game.startScript,
+								userId: data.user?.id ?? ''
+							})
+							.then((response) => {
+								if (response.data.success) {
+									data.game = response.data.userLevel;
+									resolve(response.data);
+								} else {
+									reject(response.data.error);
+								}
+							})
+							.catch((error) => {
+								reject(error.message || 'Something went wrong');
+							});
+					} catch (error) {
+						reject(error || 'Something went wrong');
+					}
+				});
+
+				toast.promise(res, {
 					loading: 'Saving the code',
 					success: 'Code saved!',
 					error: 'Error while saving code'
-				}
-			);
-			// const res = await axios.post('/api/savecode', { files, id: page.params });
+				});
+			} else {
+				const res = axios.put('/api/savecode', { files, id: data.game.id });
+
+				toast.promise(res, {
+					loading: 'Saving the code',
+					success: 'Code saved!',
+					error: 'Error while saving code'
+				});
+			}
 		}
 	}
 </script>
@@ -66,3 +89,7 @@
 	<Sidebar {saveCode} />
 	<div bind:this={embed} class="h-[calc(100vh-64px)]"></div>
 </div>
+
+<svelte:head>
+	<title>Game | {data?.game?.levelDetails.path} | inRetro</title>
+</svelte:head>

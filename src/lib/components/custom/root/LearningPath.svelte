@@ -1,6 +1,6 @@
 <script>
 	import { Badge } from '$lib/components/ui/badge/index';
-	import { Layout } from 'lucide-svelte';
+	import { Layout } from '@lucide/svelte';
 </script>
 
 <section id="learning-path" class="py-20">

@@ -1,13 +1,11 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { Badge } from '$lib/components/ui/badge/index';
 	import { Button } from '$lib/components/ui/button/index';
 
-	import { ArrowRight } from 'lucide-svelte';
+	import { ArrowRight } from '@lucide/svelte';
 </script>
 
 <section class="container mx-auto px-4 py-20 md:py-32 flex flex-col items-center text-center">
-	<Badge variant="outline" class="mb-4">Capstone Project</Badge>
 	<h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6">
 		Learn to code <span class="text-primary">the retro way</span>
 	</h1>

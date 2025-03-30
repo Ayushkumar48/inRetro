@@ -6,7 +6,7 @@
 		CardHeader,
 		CardTitle
 	} from '$lib/components/ui/card';
-	import { Code, Layers, Zap } from 'lucide-svelte';
+	import { Code, Layers, Zap } from '@lucide/svelte';
 </script>
 
 <section id="features" class="bg-muted/50 py-20">

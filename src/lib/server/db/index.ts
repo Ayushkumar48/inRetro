@@ -12,6 +12,7 @@ import {
 } from '$env/static/private';
 import { Google, GitHub } from 'arctic';
 import Redis from 'ioredis';
+import { dev } from '$app/environment';
 
 if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
 const client = postgres(env.DATABASE_URL);
@@ -26,7 +27,9 @@ export const containerClient = blobServiceClient.getContainerClient('user-images
 export const google = new Google(
 	GOOGLE_CLIENT_ID,
 	GOOGLE_CLIENT_SECRET,
-	'https://inretro.vercel.app/login/google/callback'
+	dev
+		? 'http://localhost:5173/login/google/callback'
+		: 'https://inretro.vercel.app/login/google/callback'
 );
 
 export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, null);

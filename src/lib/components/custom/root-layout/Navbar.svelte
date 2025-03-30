@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { user } from '$lib/stores/store.svelte';
+	import { page } from '$app/state';
 	import UserNav from '../game/user-nav.svelte';
 	import DarkToggle from './DarkToggle.svelte';
 </script>
@@ -12,7 +12,7 @@
 		<a href="/" class="text-[#0BC7BE]"> inRetro </a>
 	</h1>
 	<div class="flex items-center gap-x-6">
-		{#if user.current}
+		{#if page.data.user}
 			<Button href="/game" variant="secondary">Game</Button>
 			<UserNav />
 		{:else}

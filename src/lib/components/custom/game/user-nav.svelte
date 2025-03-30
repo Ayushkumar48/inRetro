@@ -3,14 +3,14 @@
 	import * as Avatar from '$lib/components/ui/avatar/index';
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
-	import { user } from '$lib/stores/store.svelte';
-	import { LogOut } from 'lucide-svelte';
+	import { LogOut } from '@lucide/svelte';
+	import { page } from '$app/state';
 	async function handleLogout() {
 		const res = await fetch('/api/logout');
 		if (res.ok) {
 			toast.success('User logged out!');
-			user.current = null;
-			window.location.href = '/';
+			page.data.user = null;
+			window.location.reload();
 		}
 	}
 </script>
@@ -18,19 +18,19 @@
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger class="flex items-center relative h-8 w-8 rounded-full">
 		<Avatar.Root class="h-8 w-8 select-none">
-			{#if user.current?.image}
-				<img src={user.current?.image} alt="user" referrerpolicy="no-referrer" />
+			{#if page.data.user?.image}
+				<img src={page.data.user?.image} alt="user" referrerpolicy="no-referrer" loading="lazy" />
 			{:else}
-				<img src="/avatars/boy.png" alt="user" />
+				<img src="/avatars/boy.webp" alt="user" loading="lazy" />
 			{/if}
 		</Avatar.Root>
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content class="w-56" align="end">
 		<DropdownMenu.Label class="font-normal">
 			<div class="flex flex-col space-y-1">
-				<p class="text-sm font-medium leading-none">{user.current?.name || 'User'}</p>
+				<p class="text-sm font-medium leading-none">{page.data.user?.name || 'User'}</p>
 				<p class="text-muted-foreground text-xs leading-none">
-					{user.current?.username || 'Username'}
+					{page.data.user?.username || 'Username'}
 				</p>
 			</div>
 		</DropdownMenu.Label>

@@ -9,16 +9,16 @@
 	import { Textarea } from '$lib/components/ui/textarea/index';
 	import { cn } from '$lib/utils.js';
 	import { profileFormSchema, type ProfileSchema } from '$lib/client/schema';
-	import { user } from '$lib/stores/store.svelte';
+	import { page } from '$app/state';
 	import { toast } from 'svelte-sonner';
 
 	let { data }: { data: SuperValidated<Infer<ProfileSchema>> } = $props();
 
 	$effect(() => {
-		if (user) {
-			$formData.email = user.current?.email || '';
-			$formData.username = user.current?.username || '';
-			$formData.bio = user.current?.bio || '';
+		if (page.data.user) {
+			$formData.email = page.data.user?.email || '';
+			$formData.username = page.data.user?.username || '';
+			$formData.bio = page.data.user?.bio || '';
 		}
 	});
 
@@ -57,12 +57,12 @@
 					placeholder="@inretro"
 					{...props}
 					bind:value={$formData.username}
-					readonly={user.current?.githubId !== null || user.current?.googleId !== null}
+					readonly={page.data.user?.githubId !== null || page.data.user?.googleId !== null}
 				/>
 			{/snippet}
 		</Form.Control>
 		<Form.Description>
-			{#if user.current?.githubId || user.current?.googleId}
+			{#if page.data.user?.githubId || page.data.user?.googleId}
 				User Details can't be changed if logged in using GitHub or Google.
 			{:else}
 				This is your public display name. It can be your real name or a pseudonym. You can only
@@ -79,7 +79,7 @@
 			{/snippet}
 		</Form.Control>
 		<Form.Description>
-			{#if user.current?.githubId || user.current?.googleId}
+			{#if page.data.user?.githubId || page.data.user?.googleId}
 				User Details can't be changed if logged in using GitHub or Google.
 			{:else}
 				This is your email. You can't change email once created.

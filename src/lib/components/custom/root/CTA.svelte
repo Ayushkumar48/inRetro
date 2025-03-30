@@ -1,7 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button/index';
-	import { ArrowRight } from 'lucide-svelte';
+	import { ArrowRight } from '@lucide/svelte';
 </script>
 
 <section id="about" class="bg-primary/5 py-20">

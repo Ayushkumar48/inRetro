@@ -3,7 +3,7 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import { cardColors, cardIcons, cn } from '$lib/utils';
-	import { Code, Bookmark, BookMarked } from 'lucide-svelte';
+	import { Code, Bookmark, BookMarked } from '@lucide/svelte';
 	let { level } = $props();
 </script>
 
@@ -59,11 +59,7 @@
 		</Card.Description>
 	</Card.Header>
 	<Card.Content class="relative z-10 text-sm group-hover:text-gray-100">
-		{level.levelDetails?.isCompleted
-			? 'Completed'
-			: level.levelDetails?.isAttempted
-				? 'Attempted'
-				: 'Not Attempted'}
+		{level.levelDetails?.status}
 	</Card.Content>
 	<Separator class="relative z-10" />
 	<Card.Footer class={`py-4 gap-x-2 z-10 flex justify-center w-full}`}>
