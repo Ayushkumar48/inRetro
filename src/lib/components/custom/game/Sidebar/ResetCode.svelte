@@ -10,31 +10,23 @@
 
 	let { collapsed } = $props();
 	async function resetCode() {
-		const res = new Promise((resolve, reject) => {
-			axios
-				.get('/api/resetcode', {
-					params: {
-						levelId: page.url.pathname.split('/').pop(),
-						id: page.data.game.id
-					}
-				})
-				.then((response) => {
-					if (response.data.success) {
-						window.location.reload();
-						resolve(response.data);
-					} else {
-						reject(response.data.error);
-					}
-				})
-				.catch((error) => {
-					reject(error.message || 'Something went wrong');
-				});
+		const res = axios.post('/api/resetcode', {
+			levelNumber: page.data.game.levelId,
+			levelId: page.data.game.id
 		});
-		toast.promise(res, {
-			loading: 'Resetting the code',
-			success: 'Code reset!',
-			error: 'Error while resetting code'
-		});
+		toast.promise(
+			res.then((res) => {
+				if (res.status === 200) {
+					page.data.game.files = res.data.userfiles;
+					window.location.reload();
+				}
+			}),
+			{
+				loading: 'Resetting the code',
+				success: 'Code reset! Reloading to get the latest code.',
+				error: 'Error while resetting code'
+			}
+		);
 	}
 </script>
 

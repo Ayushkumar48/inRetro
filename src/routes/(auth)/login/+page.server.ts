@@ -6,7 +6,7 @@ import { message, superValidate, fail } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { userSchema } from '$lib/client/schema';
 import { containerClient, db } from '$lib/server/db';
-import { eq, or } from 'drizzle-orm';
+import { eq, or, sql } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { users } from '$lib/server/db/schema';
 
@@ -136,6 +136,11 @@ export const actions: Actions = {
 				password: passwordHash,
 				image: imageUrl
 			});
+			await db.execute(sql`
+				INSERT INTO user_levels (level_id, level_details, files, template, start_script, user_id)
+				SELECT id, level_details, files, template, start_script, ${userId}
+				FROM all_levels
+			`);
 
 			const sessionToken = auth.generateSessionToken();
 			const session = await auth.createSession(sessionToken, userId);

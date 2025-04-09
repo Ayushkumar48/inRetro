@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Icons } from '$lib/components/icons/index';
-	import { Button } from '$lib/components/ui/button/index';
 	import { Input } from '$lib/components/ui/input/index';
 	import { cn } from '$lib/utils.js';
 	import * as Form from '$lib/components/ui/form/index';
@@ -8,6 +7,7 @@
 	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation';
 
 	let { signup }: { signup: SuperValidated<Infer<UserSchema>> } = $props();
 
@@ -17,6 +17,7 @@
 		onUpdated({ form }) {
 			if (form.message.status === 'success') {
 				toast.success(form.message.text);
+				goto('/game');
 			} else {
 				toast.error(form.message.text);
 			}

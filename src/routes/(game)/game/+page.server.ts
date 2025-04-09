@@ -1,25 +1,23 @@
-import { db, redis } from '$lib/server/db';
-import { allLevels } from '$lib/server/db/schema';
-import { localLevels } from '$lib/stores/store.svelte';
+import { db } from '$lib/server/db';
+import { userLevels } from '$lib/server/db/schema';
+import { asc } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
-export async function load() {
+export async function load({ locals }) {
 	try {
-		if (localLevels.current) {
-			return { levels: localLevels.current };
-		}
-		const redisCached = await redis.get('all_levels');
-		if (redisCached) {
-			localLevels.current = JSON.parse(redisCached);
-			return { levels: JSON.parse(redisCached) };
+		if (!locals.user) {
+			return { levels: [] };
 		}
 		const levels = await db
-			.select({ id: allLevels.id, levelDetails: allLevels.levelDetails })
-			.from(allLevels);
-		if (levels) {
-			levels.sort((a, b) => a.id - b.id);
-		}
-		localLevels.current = levels;
-		redis.set('all_levels', JSON.stringify(levels), 'EX', 60 * 60);
+			.select({
+				id: userLevels.id,
+				levelId: userLevels.levelId,
+				levelDetails: userLevels.levelDetails,
+				status: userLevels.status
+			})
+			.from(userLevels)
+			.where(eq(userLevels.userId, locals.user.id))
+			.orderBy(asc(userLevels.levelId));
 		return { levels };
 	} catch (error) {
 		console.error(error);

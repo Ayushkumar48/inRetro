@@ -5,7 +5,8 @@
 	import { mode } from 'mode-watcher';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	let { data } = $props();
+	import type { PageData } from './$types';
+	let { data }: { data: PageData } = $props();
 
 	type TemplateType =
 		| 'node'
@@ -39,48 +40,16 @@
 	async function saveCode() {
 		if (editorVM) {
 			const files = await editorVM.getFsSnapshot();
-			if (data.game.levelDetails.status === 'Not Attempted') {
-				const res = new Promise((resolve, reject) => {
-					try {
-						axios
-							.post('/api/savecode', {
-								levelId: data.game.id,
-								levelDetails: { ...data.game.levelDetails, status: 'Attempted' },
-								files,
-								template: data.game.template,
-								startScript: data.game.startScript,
-								userId: data.user?.id ?? ''
-							})
-							.then((response) => {
-								if (response.data.success) {
-									data.game = response.data.userLevel;
-									resolve(response.data);
-								} else {
-									reject(response.data.error);
-								}
-							})
-							.catch((error) => {
-								reject(error.message || 'Something went wrong');
-							});
-					} catch (error) {
-						reject(error || 'Something went wrong');
-					}
-				});
+			const res = axios.post('/api/savecode', {
+				id: data.game.id,
+				files
+			});
 
-				toast.promise(res, {
-					loading: 'Saving the code',
-					success: 'Code saved!',
-					error: 'Error while saving code'
-				});
-			} else {
-				const res = axios.put('/api/savecode', { files, id: data.game.id });
-
-				toast.promise(res, {
-					loading: 'Saving the code',
-					success: 'Code saved!',
-					error: 'Error while saving code'
-				});
-			}
+			toast.promise(res, {
+				loading: 'Saving the code',
+				success: 'Code saved!',
+				error: 'Error while saving code'
+			});
 		}
 	}
 </script>

@@ -9,7 +9,7 @@
 
 <header class="container mx-auto py-4 px-4 flex items-center justify-between">
 	<a href="/" class="flex items-center gap-2">
-		<img src="/logo.svg" alt="inRetro" />
+		<img src="/logo.svg" alt="inRetro-logo" class="w-6 h-6" />
 		<h1 class="font-bold text-xl" style="font-family: 'Spline Sans Mono';">inRetro</h1>
 	</a>
 	<nav class="hidden md:flex items-center gap-6">
@@ -34,7 +34,7 @@
 	<div class="items-center gap-x-3 hidden md:flex">
 		<DarkToggle />
 		{#if page.data.user}
-			<Button href="/game" variant="default" size="sm">Let's Play</Button>
+			<Button href="/game" variant="default" size="sm">Let's Learn</Button>
 			<UserNav />
 		{:else}
 			<Button href="/login?type=signup" variant="default" size="sm">Sign Up</Button>

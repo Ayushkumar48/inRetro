@@ -1,22 +1,17 @@
 import { db } from '$lib/server/db';
-import { allLevels, userLevels } from '$lib/server/db/schema';
-import { and, count, eq } from 'drizzle-orm';
-import type { PageServerLoad } from '../$types';
+import { userLevels } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
+import type { PageServerLoad } from './$types';
+import { redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	// @ts-expect-error Linter is just giving warning about this but, it works.
-	const gameId = params.gameId;
-	const [gameCount] = await db
-		.select({ count: count() })
-		.from(userLevels)
-		.where(and(eq(userLevels.levelId, gameId), eq(userLevels.userId, locals.user?.id ?? '')));
-	if (gameCount.count === 0) {
-		const [game] = await db.select().from(allLevels).where(eq(allLevels.id, gameId));
-		return { game };
+	if (!locals.user) {
+		redirect(302, '/login');
 	}
-	const [game] = await db
-		.select()
-		.from(userLevels)
-		.where(and(eq(userLevels.levelId, gameId), eq(userLevels.userId, locals.user?.id ?? '')));
-	return { game };
+	const levelId = params.gameId;
+	if (!levelId) {
+		throw new Error('Level ID is required');
+	}
+	const [level] = await db.select().from(userLevels).where(eq(userLevels.id, levelId));
+	return { game: level };
 };

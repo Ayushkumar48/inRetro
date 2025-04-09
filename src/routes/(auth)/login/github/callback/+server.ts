@@ -58,7 +58,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
 		return new Response(null, {
 			status: 302,
 			headers: {
-				Location: '/'
+				Location: '/game'
 			}
 		});
 	}
@@ -92,7 +92,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
 	return new Response(null, {
 		status: 302,
 		headers: {
-			Location: '/'
+			Location: '/game'
 		}
 	});
 }

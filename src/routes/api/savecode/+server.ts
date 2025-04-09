@@ -6,34 +6,23 @@ import { eq } from 'drizzle-orm';
 export async function POST({ request }) {
 	try {
 		const data = await request.json();
-		const [userLevel] = await db
-			.insert(userLevels)
-			.values({
-				files: data.files,
-				levelId: data.levelId,
-				levelDetails: data.levelDetails,
-				template: data.template,
-				startScript: data.startScript,
-				userId: data.userId
-			})
-			.returning();
-		return json({ success: true, userLevel });
-	} catch (error) {
-		console.error('Error parsing request:', error);
-		return json({ success: false, error: 'Invalid JSON' }, { status: 400 });
-	}
-}
-
-export async function PUT({ request }) {
-	try {
-		const data = await request.json();
+		const [existingLevel] = await db
+			.select({ status: userLevels.status })
+			.from(userLevels)
+			.where(eq(userLevels.id, data.id));
 		await db
 			.update(userLevels)
-			.set({ files: JSON.stringify(data.files) })
+			.set({
+				files: data.files,
+				status:
+					existingLevel.status === 'Submitted for Evaluation'
+						? 'Submitted for Evaluation'
+						: 'Attempted'
+			})
 			.where(eq(userLevels.id, data.id));
 		return json({ success: true });
 	} catch (error) {
 		console.error('Error parsing request:', error);
-		return json({ success: false, error: 'Invalid JSON' }, { status: 400 });
+		return json({ success: false, error: 'Invalid Request' }, { status: 400 });
 	}
 }

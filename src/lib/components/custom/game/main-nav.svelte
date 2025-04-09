@@ -5,42 +5,48 @@
 	let { class: className = '' } = $props();
 
 	let pathname = $derived(page.url.href);
-	function goto(url: string) {
-		window.location.href = url;
-	}
 </script>
 
 <nav class={cn('flex items-center space-x-4 lg:space-x-6', className)}>
-	<button
-		onclick={() => goto('/game')}
+	<a
+		href="/game"
 		class={cn(
 			'hover:text-primary text-sm font-medium transition-colors',
-			pathname.includes('completed') ||
+			pathname.includes('favorite') ||
 				pathname.includes('continue') ||
-				pathname.includes('progress')
+				pathname.includes('statistics')
 				? 'text-muted-foreground'
 				: ''
 		)}
 	>
-		All Levels</button
+		All Levels</a
 	>
 
-	<button
-		onclick={() => goto('/game/favorite')}
+	<a
+		href="/game/favorite"
 		class={cn(
 			'hover:text-primary text-sm font-medium transition-colors',
-			pathname.includes('completed') ? '' : 'text-muted-foreground'
+			pathname.includes('favorite') ? '' : 'text-muted-foreground'
 		)}
 	>
 		Favorites
-	</button>
-	<button
-		onclick={() => goto('/game/continue')}
+	</a>
+	<a
+		href="/game/continue"
 		class={cn(
 			'hover:text-primary text-sm font-medium transition-colors',
 			pathname.includes('continue') ? '' : 'text-muted-foreground'
 		)}
 	>
 		Continue
-	</button>
+	</a>
+	<a
+		href="/game/statistics"
+		class={cn(
+			'hover:text-primary text-sm font-medium transition-colors',
+			pathname.includes('statistics') ? '' : 'text-muted-foreground'
+		)}
+	>
+		Statistics
+	</a>
 </nav>

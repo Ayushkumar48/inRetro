@@ -1,14 +1,27 @@
+import { sql } from 'drizzle-orm';
 import {
 	pgTable,
 	text,
 	timestamp,
 	serial,
 	json,
-	jsonb,
 	date,
 	integer,
-	uuid
+	uuid,
+	boolean,
+	pgEnum
 } from 'drizzle-orm/pg-core';
+import { customType } from 'drizzle-orm/pg-core';
+
+const CustomJSONB = <TData>(name: string) =>
+	customType<{ data: TData; driverData: string }>({
+		dataType() {
+			return 'jsonb';
+		},
+		toDriver(value: TData): string {
+			return JSON.stringify(value);
+		}
+	})(name);
 
 export const users = pgTable('users', {
 	id: text('id').primaryKey(),
@@ -35,7 +48,7 @@ export const session = pgTable('session', {
 
 export const allLevels = pgTable('all_levels', {
 	id: serial('id').primaryKey(),
-	levelDetails: jsonb('level_details').$type<LevelDetails>().notNull(),
+	levelDetails: CustomJSONB<LevelDetails>('level_details').notNull(),
 	files: json('files').notNull(),
 	template: text('template'),
 	startScript: text('start_script')
@@ -46,25 +59,50 @@ export type LevelDetails = {
 	type: string;
 	details: string;
 	language: string;
-	status: 'Not Attempted' | 'Attempted' | 'Submitted for Evaluation' | 'Completed';
 	isBookmarked: boolean;
 };
 
+export const levelStatusEnum = pgEnum('level_status', [
+	'Not Attempted',
+	'Attempted',
+	'Submitted for Evaluation',
+	'Completed'
+]);
+
 export const userLevels = pgTable('user_levels', {
-	id: uuid().defaultRandom().primaryKey(),
+	id: uuid()
+		.primaryKey()
+		.default(sql`gen_random_uuid()`),
 	levelId: integer('level_id')
 		.references(() => allLevels.id, { onDelete: 'cascade' })
 		.notNull(),
-	levelDetails: jsonb('level_details').$type<LevelDetails>().notNull(),
+	levelDetails: CustomJSONB<LevelDetails>('level_details').notNull(),
 	files: json('files').notNull(),
 	template: text('template'),
 	startScript: text('start_script'),
+	status: levelStatusEnum('status').default('Not Attempted').notNull(),
 	userId: text('user_id')
 		.notNull()
 		.references(() => users.id, { onDelete: 'cascade' })
 });
 
-export const adminSessions = pgTable('admin_sessions', {
+export type Score = {
+	levelNumber: number;
+	score: number;
+	completedOn: Date;
+};
+
+export const userLevelsScore = pgTable('user_levels_score', {
+	id: text('id')
+		.primaryKey()
+		.default(sql`gen_random_uuid()`),
+	userId: text('user_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	scores: CustomJSONB<Score>('scores').array()
+});
+
+export const adminSession = pgTable('admin_session', {
 	id: text('id').primaryKey(),
 	adminId: text('admin_id')
 		.notNull()
@@ -73,10 +111,13 @@ export const adminSessions = pgTable('admin_sessions', {
 });
 
 export const admin = pgTable('admin', {
-	id: text('id').primaryKey(),
+	id: text('id')
+		.primaryKey()
+		.default(sql`gen_random_uuid()`),
 	name: text('name').notNull(),
 	email: text('email').notNull(),
 	password: text('password').notNull(),
+	isApproved: boolean('is_approved').default(false),
 	createdAt: timestamp('created_at').defaultNow().notNull()
 });
 
@@ -92,8 +133,12 @@ export type NewUser = typeof users.$inferInsert;
 export type UserLevel = typeof userLevels.$inferSelect;
 export type NewUserLevel = typeof userLevels.$inferInsert;
 
+export type UserLevelsScore = typeof userLevelsScore.$inferSelect;
+export type NewUserLevelsScore = typeof userLevelsScore.$inferInsert;
+
 export type Admin = typeof admin.$inferSelect;
 export type NewAdmin = typeof admin.$inferInsert;
+export type SafeAdmin = Omit<Admin, 'password'>;
 
-export type AdminSession = typeof adminSessions.$inferSelect;
-export type NewAdminSession = typeof adminSessions.$inferInsert;
+export type AdminSession = typeof adminSession.$inferSelect;
+export type NewAdminSession = typeof adminSession.$inferInsert;

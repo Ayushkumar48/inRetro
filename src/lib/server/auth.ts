@@ -1,5 +1,5 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeBase64url, encodeHexLowerCase } from '@oslojs/encoding';
 import { db } from '$lib/server/db';
@@ -141,6 +141,11 @@ export async function createUser(userDetails: GitHubUser | GoogleUser, type: 'go
 		userRecord.googleId = (userDetails as GoogleUser).googleId;
 	}
 	await db.insert(table.users).values(userRecord);
+	await db.execute(sql`
+		INSERT INTO user_levels (level_id, level_details, files, template, start_script, user_id)
+		SELECT id, level_details, files, template, start_script, ${userId}
+		FROM all_levels
+	`);
 
 	const [user] = await db.select().from(table.users).where(eq(table.users.id, userId));
 	return user;
