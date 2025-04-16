@@ -4,10 +4,10 @@
 	import { Sun, Moon } from '@lucide/svelte';
 	import { toggleMode } from 'mode-watcher';
 	import { page } from '$app/state';
-	const currentPath = Number(page.url.pathname.split('/').pop());
+	let currentPath = $derived(page.url.pathname.split('/').pop());
 </script>
 
-{#if !isNaN(currentPath)}
+{#if currentPath && currentPath.length > 20}
 	<AlertDialog.Root>
 		<AlertDialog.Trigger class={buttonVariants({ variant: 'outline' })} onclick={toggleMode}>
 			<Sun

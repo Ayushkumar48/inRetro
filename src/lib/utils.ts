@@ -310,3 +310,22 @@ export const shortcuts = [
 		description: 'Trim trailing whitespace'
 	}
 ];
+
+export function initials(name: string) {
+	if (!name || !name.length) return '';
+	const nameArray = name.split(' ');
+	if (nameArray.length > 1) {
+		return nameArray[0].charAt(0).toUpperCase() + nameArray[1].charAt(0).toUpperCase();
+	} else {
+		return name.charAt(0).toUpperCase();
+	}
+}
+
+export function formatShortTime(date: Date) {
+	const options: Intl.DateTimeFormatOptions = {
+		hour: '2-digit',
+		minute: '2-digit',
+		hour12: false
+	};
+	return new Intl.DateTimeFormat('en-US', options).format(date);
+}

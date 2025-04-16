@@ -10,7 +10,7 @@
 		<img src="/logo.svg" alt="inRetro" />
 		<h1 class="font-bold text-xl" style="font-family: 'Spline Sans Mono';">inRetro</h1>
 	</a>
-	<DashboardMainNav class="mx-6" />
+	<DashboardMainNav />
 	<div class="ml-auto flex items-center space-x-4">
 		<div>
 			<GameDarkToggle />

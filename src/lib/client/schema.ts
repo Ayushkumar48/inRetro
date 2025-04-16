@@ -21,18 +21,13 @@ export const profileFormSchema = z.object({
 		.min(2, 'Username must be at least 2 characters.')
 		.max(30, 'Username must not be longer than 30 characters'),
 	email: z.string().email(),
-	bio: z.string().min(4).max(160).default('I own a computer.').optional(),
+	bio: z.string().max(160, "Bio can't be more than 160 characters.").optional(),
 	urls: z.array(z.string().url()).default([])
 });
 
 export const accountFormSchema = z.object({
 	name: z.string(),
-	dob: z
-		.string()
-		.refine((date) => date && !isNaN(Date.parse(date)), {
-			message: 'Please select a valid date.'
-		})
-		.optional(),
+	dob: z.date().optional(),
 	password: z
 		.string()
 		.min(8, 'Password must be at least 8 characters')

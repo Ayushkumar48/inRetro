@@ -1,6 +1,6 @@
 import { superValidate, fail } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { type Actions, redirect } from '@sveltejs/kit';
+import { type Actions } from '@sveltejs/kit';
 import { profileFormSchema } from '$lib/client/schema.js';
 import type { PageServerLoad } from './$types.js';
 
@@ -18,6 +18,8 @@ export const actions: Actions = {
 				form
 			});
 		}
-		redirect(303, event.url.pathname);
+		return {
+			form
+		};
 	}
 };

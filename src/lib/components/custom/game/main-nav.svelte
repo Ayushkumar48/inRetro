@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { cn } from '$lib/utils.js';
 	import { page } from '$app/state';
-
-	let { class: className = '' } = $props();
+	import * as Menubar from '$lib/components/ui/menubar/index.js';
+	import { Menu } from '@lucide/svelte';
+	import { goto } from '$app/navigation';
 
 	let pathname = $derived(page.url.href);
 </script>
 
-<nav class={cn('flex items-center space-x-4 lg:space-x-6', className)}>
+<nav class="md:flex items-center space-x-4 lg:space-x-6 hidden mx-6">
 	<a
 		href="/game"
 		class={cn(
@@ -50,3 +51,18 @@
 		Statistics
 	</a>
 </nav>
+
+<Menubar.Root class="flex items-center justify-center md:hidden ml-6">
+	<Menubar.Menu>
+		<Menubar.Trigger><Menu size="22" /></Menubar.Trigger>
+		<Menubar.Content>
+			<Menubar.Item onclick={() => goto('/game')}>All Levels</Menubar.Item>
+			<Menubar.Separator />
+			<Menubar.Item onclick={() => goto('/game/favorite')}>Favorites</Menubar.Item>
+			<Menubar.Separator />
+			<Menubar.Item onclick={() => goto('/game/continue')}>Continue</Menubar.Item>
+			<Menubar.Separator />
+			<Menubar.Item onclick={() => goto('/game/statistics')}>Statistics</Menubar.Item>
+		</Menubar.Content>
+	</Menubar.Menu>
+</Menubar.Root>

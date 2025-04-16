@@ -1,24 +1,17 @@
 <script lang="ts">
-	import CalendarIcon from 'svelte-radix/Calendar.svelte';
 	import { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import {
-		DateFormatter,
-		type DateValue,
-		getLocalTimeZone,
-		parseDate
-	} from '@internationalized/date';
 	import * as Form from '$lib/components/ui/form/index';
-	import * as Popover from '$lib/components/ui/popover/index';
-	import { Calendar } from '$lib/components/ui/calendar/index';
 	import { Input } from '$lib/components/ui/input/index';
-	import { Button, buttonVariants } from '$lib/components/ui/button/index';
-	import { cn } from '$lib/utils.js';
+	import { Button } from '$lib/components/ui/button/index';
 	import { accountFormSchema, type AccountSchema } from '$lib/client/schema';
-	import { BadgeInfo, Eye, EyeClosed } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import { toast } from 'svelte-sonner';
-	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
+
+	import DatePicker from './date-picker.svelte';
+	import PasswordTooltip from './password-tooltip.svelte';
+	import { EyeClosedIcon, EyeIcon } from '@lucide/svelte';
+	import { goto } from '$app/navigation';
 
 	let { data }: { data: SuperValidated<Infer<AccountSchema>> } = $props();
 
@@ -27,20 +20,13 @@
 		onUpdated: ({ form: f }) => {
 			if (f.valid) {
 				toast.success('Profile updated successfully!');
+				goto('/profile', { replaceState: true });
 			} else {
 				toast.error('Please resolve the errors.');
 			}
 		}
 	});
-	const { form: formData, enhance, validate } = form;
-
-	const df = new DateFormatter('en-US', {
-		dateStyle: 'long'
-	});
-
-	let dobValue = $state<DateValue | undefined>(
-		$formData.dob ? parseDate($formData.dob) : undefined
-	);
+	const { form: formData, enhance } = form;
 	let eyeOpen = $state<boolean>(true);
 	$effect(() => {
 		if (page.data.user?.name) {
@@ -72,43 +58,7 @@
 		<Form.Control>
 			{#snippet children({ props }: { props: Record<string, any> })}
 				<Form.Label>Date of Birth</Form.Label>
-				<Popover.Root>
-					<Popover.Trigger
-						class={cn(
-							buttonVariants({ variant: 'outline' }),
-							'w-[240px] justify-start text-left font-normal',
-							!dobValue && 'text-muted-foreground'
-						)}
-					>
-						<CalendarIcon class="mr-2 h-4 w-4" />
-						{dobValue ? df.format(dobValue.toDate(getLocalTimeZone())) : 'Pick a date'}
-					</Popover.Trigger>
-					<Popover.Content class="w-auto p-0" align="start">
-						<Calendar
-							type="single"
-							bind:value={dobValue}
-							isDateDisabled={(currDate) => {
-								const currDateObj = currDate.toDate(getLocalTimeZone());
-								const today = new Date();
-								today.setHours(0, 0, 0, 0);
-
-								if (currDateObj > today || currDate.year < 1900) return true;
-
-								return false;
-							}}
-							onValueChange={(value: DateValue | undefined) => {
-								if (value === undefined) {
-									$formData.dob = '';
-									validate('dob');
-									return;
-								}
-								$formData.dob = value.toDate('UTC').toISOString();
-								validate('dob');
-							}}
-						/>
-					</Popover.Content>
-					<input hidden bind:value={$formData.dob} name="calender" {...props} />
-				</Popover.Root>
+				<DatePicker bind:value={$formData.dob} {...props} />
 			{/snippet}
 		</Form.Control>
 		<Form.FieldErrors />
@@ -116,18 +66,9 @@
 	<Form.Field name="password" {form}>
 		<Form.Control>
 			{#snippet children({ props }: { props: Record<string, any> })}
-				<Form.Label class="flex gap-x-2 items-center"
-					>Account Password
-					<Tooltip.Provider>
-						<Tooltip.Root delayDuration={100}>
-							<Tooltip.Trigger><BadgeInfo class="w-5 h-5" /></Tooltip.Trigger>
-							<Tooltip.Content class="w-80 text-wrap">
-								<p>
-									Password can only be changed if account is not logged in through Google or GitHub.
-								</p>
-							</Tooltip.Content>
-						</Tooltip.Root>
-					</Tooltip.Provider>
+				<Form.Label class="flex gap-x-2 items-center">
+					Account Password
+					<PasswordTooltip />
 				</Form.Label>
 				<div class="relative">
 					<Input
@@ -143,9 +84,9 @@
 						type="button"
 					>
 						{#if eyeOpen}
-							<EyeClosed />
+							<EyeClosedIcon />
 						{:else}
-							<Eye />
+							<EyeIcon />
 						{/if}
 					</Button>
 				</div>

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
-	import SuperDebug from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { tick } from 'svelte';
 	import * as Form from '$lib/components/ui/form/index';
@@ -11,6 +10,7 @@
 	import { profileFormSchema, type ProfileSchema } from '$lib/client/schema';
 	import { page } from '$app/state';
 	import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation';
 
 	let { data }: { data: SuperValidated<Infer<ProfileSchema>> } = $props();
 
@@ -27,6 +27,7 @@
 		onUpdated: ({ form: f }) => {
 			if (f.valid) {
 				toast.success('Profile updated successfully!');
+				goto('/profile/account', { replaceState: true });
 			} else {
 				toast.error('Please resolve the errors.');
 			}
@@ -91,7 +92,7 @@
 		<Form.Control>
 			{#snippet children({ props }: { props: Record<string, any> })}
 				<Form.Label>Bio</Form.Label>
-				<Textarea bind:value={$formData.bio} {...props} />
+				<Textarea bind:value={$formData.bio} {...props} placeholder="I own a computer." />
 			{/snippet}
 		</Form.Control>
 		<Form.Description>

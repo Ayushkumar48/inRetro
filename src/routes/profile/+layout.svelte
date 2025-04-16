@@ -1,4 +1,5 @@
 <script lang="ts">
+	import GameDarkToggle from '$lib/components/custom/game/GameDarkToggle.svelte';
 	import SidebarNav from '$lib/components/custom/profile/sidebar-nav.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
@@ -22,6 +23,7 @@
 			<p class="text-muted-foreground">Manage your account settings and set e-mail preferences.</p>
 		</div>
 		<div class="flex gap-x-4 items-center">
+			<GameDarkToggle />
 			<Button variant="secondary" href="/">Home</Button>
 			<Button variant="secondary" href="/game">Game</Button>
 		</div>
