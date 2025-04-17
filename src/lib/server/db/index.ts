@@ -1,9 +1,11 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { env } from '$env/dynamic/private';
+import { GoogleGenAI } from '@google/genai';
 import { BlobServiceClient } from '@azure/storage-blob';
 import {
 	AZURE_STORAGE_CONNECTION_STRING,
+	GEMINI_API_KEY,
 	GITHUB_CLIENT_ID,
 	GITHUB_CLIENT_SECRET,
 	GOOGLE_CLIENT_ID,
@@ -35,3 +37,4 @@ export const google = new Google(
 export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, null);
 
 export const redis = new Redis(REDIS_URL);
+export const gemini = new GoogleGenAI({ apiKey: GEMINI_API_KEY });

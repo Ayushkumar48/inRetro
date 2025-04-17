@@ -57,6 +57,18 @@
 			});
 		}
 	}
+	export type MessageType = {
+		message: string;
+		sender: 'user' | 'ai';
+		messageId: number;
+	};
+
+	let message = $state('');
+	let messageCount = $state(3);
+	let messages = $state<MessageType[]>([
+		{ message: 'Hello!', sender: 'user', messageId: 1 },
+		{ message: 'Hi there!', sender: 'ai', messageId: 2 }
+	]);
 </script>
 
 <div class="flex">
@@ -78,9 +90,9 @@
 				class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
 			/>
 			<Dialog.Content
-				class="rounded-card-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 outline-hidden fixed w-80 border border-border right-4 bottom-10 bg-gray-400 rounded-lg"
+				class="rounded-card-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 outline-hidden fixed w-96 border border-border right-4 bottom-10 bg-gray-400 rounded-lg"
 			>
-				<CustomChat />
+				<CustomChat bind:message bind:messages bind:messageCount />
 			</Dialog.Content>
 		</Dialog.Portal>
 	</Dialog.Root>

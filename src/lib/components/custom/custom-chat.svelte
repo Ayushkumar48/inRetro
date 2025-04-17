@@ -1,34 +1,41 @@
 <script lang="ts">
 	import * as Chat from '$lib/components/ui/chat';
-	import * as Avatar from '$lib/components/ui/avatar';
 	import { Button } from '$lib/components/ui/button';
-	import { Info, Paperclip, Phone, Send, SparklesIcon, VideoIcon } from '@lucide/svelte';
+	import { Send, SparklesIcon } from '@lucide/svelte';
 	import { Input } from '$lib/components/ui/input';
+	import { marked } from 'marked';
+	import DOMPurify from 'isomorphic-dompurify';
+	import axios from 'axios';
 
-	let data = {
-		user: {
-			id: 1,
-			name: 'Me'
-		},
-		friend: {
-			id: 2,
-			name: 'AI'
-		},
-		messages: [
-			{ message: 'Hello!', senderId: 1, sentAt: '10:00 AM' },
-			{ message: 'Hi there!', senderId: 2, sentAt: '10:01 AM' }
-		],
-		users: [
-			{ id: 1, name: 'Me' },
-			{
-				id: 2,
-				name: 'AI'
-			}
-		]
-	};
-	import { formatShortTime } from '$lib/utils';
-	let message = $state('');
-	let messages = $derived(data.messages);
+	let { message = $bindable(), messages = $bindable(), messageCount = $bindable() } = $props();
+	async function handleClick() {
+		messages.push({ message, sender: 'user', messageId: messageCount });
+		message = '';
+		messageCount++;
+		const response = await axios.post('/api/ask-ai', {
+			message: messages[messages.length - 1].message
+		});
+		if (response.status === 200) {
+			messages.push({
+				message: response.data,
+				sender: 'ai',
+				messageId: messageCount
+			});
+			messageCount++;
+		} else {
+			messages.push({
+				message: 'Error while fetching the response',
+				sender: 'ai',
+				messageId: messageCount
+			});
+			messageCount++;
+		}
+	}
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.key === 'Enter') {
+			handleClick();
+		}
+	}
 </script>
 
 <div class="rounded-[7px] overflow-hidden shadow-md bg-card">
@@ -43,53 +50,38 @@
 			</div>
 		</div>
 	</div>
-	<Chat.List class="md:h-[400px] h-[300px] max-h-[600px] overflow-x-hidden overflow-y-auto">
-		{#each messages as message (message.sentAt)}
-			{@const sender = data.users.find((u) => u.id === message.senderId)}
-			<Chat.Bubble variant={message.senderId === data.user.id ? 'sent' : 'received'}>
+	<Chat.List class="md:min-h-[400px] min-h-[300px] max-h-[600px] overflow-x-auto overflow-y-auto">
+		{#each messages as message (message.messageId)}
+			{@const purifiedMessage = DOMPurify.sanitize(marked.parse(message.message) as string)}
+			<Chat.Bubble variant={message.sender === 'user' ? 'sent' : 'received'}>
 				<Chat.BubbleAvatar>
 					<Chat.BubbleAvatarFallback>
-						{sender?.name}
+						{message.sender === 'user' ? 'Me' : 'AI'}
 					</Chat.BubbleAvatarFallback>
 				</Chat.BubbleAvatar>
 				<Chat.BubbleMessage class="flex flex-col gap-1">
-					<p>{message.message}</p>
-					<div class="w-full text-xs group-data-[variant='sent']/chat-bubble:text-end">
-						{message.sentAt}
-					</div>
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+					<p>{@html purifiedMessage}</p>
 				</Chat.BubbleMessage>
 			</Chat.Bubble>
 		{/each}
-		<Chat.Bubble variant="received">
-			<Chat.BubbleAvatar>
-				<Chat.BubbleAvatarFallback>
-					{data.friend.name}
-				</Chat.BubbleAvatarFallback>
-			</Chat.BubbleAvatar>
-			<Chat.BubbleMessage typing />
-		</Chat.Bubble>
 	</Chat.List>
-	<form
-		onsubmit={(e) => {
-			e.preventDefault();
-			messages.push({ message, senderId: data.user.id, sentAt: formatShortTime(new Date()) });
-			message = '';
-		}}
-		class="flex place-items-center gap-2 p-2 bg-secondary"
-	>
+	<div class="flex place-items-center gap-2 p-2 bg-secondary">
 		<Input
 			bind:value={message}
 			class="rounded-full ring-1 ring-gray-400"
 			placeholder="Type a message..."
+			onkeydown={handleKeydown}
 		/>
 		<Button
 			type="submit"
 			variant="default"
 			size="icon"
 			class="shrink-0 rounded-full"
+			onclick={handleClick}
 			disabled={message === ''}
 		>
 			<Send />
 		</Button>
-	</form>
+	</div>
 </div>
